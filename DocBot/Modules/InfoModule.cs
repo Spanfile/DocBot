@@ -27,7 +27,7 @@ namespace DocBot.Modules
         [Command("info")]
         [Summary("Shows different diagnostic values for the bot")]
         public async Task Info(
-            [Summary("Force a GC collection at next performance service tick")]
+            [Summary("If set, wait until the next performance service tick, collect unused memory and show diagnostic info")]
             bool forceCollect = false)
         {
             EmbedBuilder embed;
