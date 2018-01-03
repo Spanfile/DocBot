@@ -15,42 +15,50 @@ namespace DocBot.Modules
     {
         private readonly DiscordSocketClient discord;
         private readonly LoggingService logger;
+        private readonly PerformanceService perf;
 
-        public InfoModule(DiscordSocketClient discord, LoggingService logger)
+        public InfoModule(DiscordSocketClient discord, LoggingService logger, PerformanceService perf)
         {
             this.discord = discord;
             this.logger = logger;
+            this.perf = perf;
         }
 
         [Command("info")]
         [Summary("Shows different diagnostic values for the bot")]
         public async Task Info(
-            [Summary("Force a GC collection before calculating heap memory usage")]
+            [Summary("Force a GC collection at next performance service tick")]
             bool forceCollect = false)
         {
-            long heap;
+            EmbedBuilder embed;
+            IUserMessage msg = null;
+
             if (forceCollect)
             {
-                await logger.LogDebug("Forcing a GC collect before calculating heap size");
-                heap = await Task.Factory.StartNew(() => GC.GetTotalMemory(true));
+                embed = new EmbedBuilder()
+                    .WithColor(100, 149, 237)
+                    .WithDescription("Waiting for next performance service tick...");
+                msg = await ReplyAsync("", embed: embed.Build());
+                await perf.WaitNextTick(true);
             }
-            else
-                heap = GC.GetTotalMemory(false);
 
-            long proc;
-            using (var currentProx = Process.GetCurrentProcess())
-                proc = currentProx.PrivateMemorySize64;
-
-            var embed = new EmbedBuilder()
+            embed = new EmbedBuilder()
                 .WithColor(100, 149, 237)
-                .AddInlineField("Gateway latency", $"{discord.Latency} ms")
-                .AddInlineField("Heap memory use", $"{heap / 1_000_000f:##.00}MB")
-                .AddInlineField("Process memory use", $"{proc / 1_000_000f:##.00}MB")
+                .AddInlineField("Gateway latency", $"{perf.AverageLatency:.##} ms")
+                .AddInlineField("Heap memory use", $"{perf.AverageHeapMemory / 1_000_000f:.##}MB")
+                .AddInlineField("Process memory use", $"{perf.AverageProcessMemory / 1_000_000f:.##}MB")
+                .AddInlineField("GC max generations", $"{GC.MaxGeneration}")
+                .AddInlineField("Generation 0 collections", $"{GC.CollectionCount(0)}")
                 .AddInlineField("Guilds", discord.Guilds.Count)
                 .AddInlineField("Users", discord.Guilds.Sum(g => g.Users.Count))
-                .WithTimestamp(DateTimeOffset.UtcNow);
+                .WithTimestamp(DateTimeOffset.UtcNow)
+                .WithDescription("Diagnostic data collected over previous " +
+                                 $"{perf.MaxSampleTimeRange / 1000}s");
 
-            await ReplyAsync("", embed: embed.Build());
+            if (msg != null)
+                await msg.ModifyAsync(f => f.Embed = embed.Build());
+            else
+                await ReplyAsync("", embed: embed.Build());
         }
     }
 }

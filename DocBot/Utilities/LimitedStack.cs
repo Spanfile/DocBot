@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace DocBot.Collections
+namespace DocBot.Utilities
 {
     internal class LimitedStack<T> : IEnumerable<T>
     {
