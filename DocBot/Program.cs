@@ -17,6 +17,13 @@ namespace DocBot
 
         internal async Task StartAsync()
         {
+            const LogSeverity globalLogLevel =
+#if DEBUG
+                LogSeverity.Debug;
+#else
+                LogSeverity.Info;
+#endif
+
             var config = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("config.json")
@@ -24,19 +31,11 @@ namespace DocBot
 
             var services = new ServiceCollection()
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig {
-#if DEBUG
-                    LogLevel = LogSeverity.Debug,
-#else
-                    LogLevel = LogSeverity.Info,
-#endif
+                    LogLevel = globalLogLevel,
                     MessageCacheSize = 1000
                 }))
                 .AddSingleton(new CommandService(new CommandServiceConfig {
-#if DEBUG
-                    LogLevel = LogSeverity.Debug,
-#else
-                    LogLevel = LogSeverity.Info,
-#endif
+                    LogLevel = globalLogLevel,
                     DefaultRunMode = RunMode.Async
                 }))
                 .AddSingleton<CommandHandler>()
