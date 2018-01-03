@@ -6,7 +6,6 @@ namespace DocBot.Utilities
 {
     internal class AsyncAutoResetEvent
     {
-        private static readonly Task completed = Task.FromResult(true);
         private readonly Queue<TaskCompletionSource<bool>> waits = new Queue<TaskCompletionSource<bool>>();
 
         public Task WaitAsync()
