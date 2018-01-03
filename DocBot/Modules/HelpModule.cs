@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -19,7 +21,7 @@ namespace DocBot.Modules
             this.config = config;
         }
 
-        [Command("help")]
+        [Command("help"), Alias("h")]
         [Summary("Shows this help")]
         public async Task HelpAsync()
         {
@@ -45,7 +47,6 @@ namespace DocBot.Modules
                     {
                         f.Name = module.Name;
                         f.Value = desc;
-                        f.IsInline = false;
                     });
                 }
             }
@@ -53,39 +54,56 @@ namespace DocBot.Modules
             await ReplyAsync("", embed: builder.Build());
         }
 
-        [Command("help")]
-        [Summary("Shows help for a certain command")]
+        [Command("help"), Alias("h")]
+        [Summary("Shows help for a certain command or commands")]
         public async Task HelpAsync(string commandStr)
         {
-            var result = service.Search(Context, commandStr);
+            CommandInfo[] commands = null;
+            var message = "";
+            var description = "These are the commands you can use. There ain't too many of them";
 
-            if (!result.IsSuccess)
+            if (!string.IsNullOrWhiteSpace(commandStr))
             {
-                await ReplyAsync($"What is `{commandStr}`?");
+                var result = service.Search(Context, commandStr);
+
+                if (result.IsSuccess)
+                {
+                    commands = result.Commands.Select(c => c.Command).ToArray();
+                    description = $"These are the commands you can use that look like `{commandStr}`";
+                }
+                else
+                    message = $"I don't recognise `{commandStr}`?";
+            }
+            else
+            {
+                commands = service.Modules.SelectMany(m => m.Commands).ToArray();
+            }
+
+            if (!commands?.Any() ?? true)
+            {
+                await ReplyAsync("I failed to find any commands at all - none whatsoever, from anywhere. That's troubling");
                 return;
             }
 
             var prefix = config["prefix"];
-            var builder = new EmbedBuilder {
+            var builder = new EmbedBuilder
+            {
                 Color = new Color(100, 149, 237),
-                Description = $"These commands look like `{commandStr}`"
+                Description = description
             };
 
-            foreach (var match in result.Commands)
+            foreach (var command in commands)
             {
-                var command = match.Command;
+                var parameters = string.Join(", ", command.Parameters.Select(p => p.Name));
 
                 builder.AddField(f =>
                 {
-                    f.Name = string.Join(", ", command.Aliases);
-                    f.Value =
-                        $"Parameters: {string.Join(", ", command.Parameters.Select(p => p.Name))}" +
-                        $"Summary: {command.Summary}";
-                    f.IsInline = false;
+                    f.Name = string.Join(", ", command.Aliases.Select(a => $"{prefix} {a}"));
+                    f.Value = $"Parameters: {parameters}\nSummary: {command.Summary}";
                 });
             }
 
-            await ReplyAsync("", embed: builder.Build());
+            await ReplyAsync(message, embed: builder.Build());
         }
     }
 }
