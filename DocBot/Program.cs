@@ -30,6 +30,7 @@ namespace DocBot
                 .Build();
 
             var services = new ServiceCollection()
+                .AddSingleton(config)
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig {
                     LogLevel = globalLogLevel,
                     MessageCacheSize = 1000
@@ -38,17 +39,19 @@ namespace DocBot
                     LogLevel = globalLogLevel,
                     DefaultRunMode = RunMode.Async
                 }))
-                .AddSingleton<CommandHandler>()
                 .AddSingleton<LoggingService>()
+                .AddSingleton<CommandHandler>()
                 .AddSingleton<StartupService>()
                 .AddSingleton<PerformanceService>()
-                .AddSingleton(config);
+                .AddSingleton<DocumentationService>();
 
             var provider = services.BuildServiceProvider();
 
             var logger = provider.GetRequiredService<LoggingService>();
             await logger.LogInfo($"DocBot version {Assembly.GetEntryAssembly().GetName().Version}");
+
             await provider.GetRequiredService<StartupService>().StartAsync();
+            await provider.GetRequiredService<DocumentationService>().StartAsync();
 
             // initialise the rest of the services
             provider.GetRequiredService<CommandHandler>();
