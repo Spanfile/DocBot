@@ -56,7 +56,7 @@ namespace DocBot.Modules
             }
 
             var prefix = config["prefix"];
-            var builder = new EmbedBuilder
+            var embed = new EmbedBuilder
             {
                 Color = new Color(100, 149, 237),
                 Description = description
@@ -94,14 +94,14 @@ namespace DocBot.Modules
                         .AppendLine(param.Summary);
                 }
 
-                builder.AddField(f =>
+                embed.AddField(f =>
                 {
                     f.Name = nameBuilder.ToString();
                     f.Value = valueBuilder.ToString();
                 });
             }
 
-            await ReplyAsync(message, embed: builder.Build());
+            await ReplyAsync(message, embed: embed.Build());
         }
     }
 }
