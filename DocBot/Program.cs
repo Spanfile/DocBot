@@ -47,8 +47,7 @@ namespace DocBot
             var provider = services.BuildServiceProvider();
 
             var logger = provider.GetRequiredService<LoggingService>();
-            await logger.Log(new LogMessage(
-                LogSeverity.Info, "DocBot", $"DocBot version {Assembly.GetEntryAssembly().GetName().Version}"));
+            await logger.LogInfo($"DocBot version {Assembly.GetEntryAssembly().GetName().Version}");
             await provider.GetRequiredService<StartupService>().StartAsync();
             provider.GetRequiredService<CommandHandler>();
 

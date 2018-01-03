@@ -22,11 +22,21 @@ namespace DocBot.Services
             this.discord = discord;
             this.commands = commands;
 
-            this.discord.Log += Log;
-            this.commands.Log += Log;
+            this.discord.Log += OnLog;
+            this.commands.Log += OnLog;
         }
 
-        public Task Log(LogMessage message)
+        public Task LogInfo(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Info, source, message, ex);
+        public Task LogWarning(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Warning, source, message, ex);
+        public Task LogError(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Error, source, message, ex);
+        public Task LogCritical(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Critical, source, message, ex);
+        public Task LogVerbose(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Verbose, source, message, ex);
+        public Task LogDebug(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Debug, source, message, ex);
+
+        private Task Log(LogSeverity severity, string source, string message, Exception ex) =>
+            OnLog(new LogMessage(severity, source, message, ex));
+
+        private Task OnLog(LogMessage message)
         {
             if (!Directory.Exists(logDirectory))
                 Directory.CreateDirectory(logDirectory);
@@ -36,8 +46,8 @@ namespace DocBot.Services
 
             var logText =
                 $"{DateTime.UtcNow:hh:mm:ss} [{message.Severity}] {message.Source}: {message.Exception?.ToString() ?? message.Message}";
-            File.AppendAllText(LogFile, logText + '\n');
-            return Console.Out.WriteLineAsync(logText);
+
+            return Task.WhenAll(File.AppendAllTextAsync(LogFile, logText + '\n'), Console.Out.WriteLineAsync(logText));
         }
     }
 }
