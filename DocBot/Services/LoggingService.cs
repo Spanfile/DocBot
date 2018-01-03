@@ -6,7 +6,7 @@ using Discord.WebSocket;
 
 namespace DocBot.Services
 {
-    internal class LoggingService
+    public class LoggingService
     {
         private readonly DiscordSocketClient discord;
         private readonly CommandService commands;
