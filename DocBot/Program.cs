@@ -41,6 +41,7 @@ namespace DocBot
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<LoggingService>()
                 .AddSingleton<StartupService>()
+                .AddSingleton<PerformanceService>()
                 .AddSingleton(config);
 
             var provider = services.BuildServiceProvider();
@@ -48,7 +49,10 @@ namespace DocBot
             var logger = provider.GetRequiredService<LoggingService>();
             await logger.LogInfo($"DocBot version {Assembly.GetEntryAssembly().GetName().Version}");
             await provider.GetRequiredService<StartupService>().StartAsync();
+
+            // initialise the rest of the services
             provider.GetRequiredService<CommandHandler>();
+            provider.GetRequiredService<PerformanceService>();
 
             await Task.Delay(-1);
         }
