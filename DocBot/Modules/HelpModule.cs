@@ -25,30 +25,14 @@ namespace DocBot.Modules
 
         [Command("help")]
         [Summary("Shows help for commands")]
-        public async Task HelpAsync(
-            [Summary("Command to see help for")]
-            string command = null)
+        public async Task HelpAsync()
         {
-            CommandInfo[] commands = null;
-            var message = "";
-            var description = "These are the commands you can use. There ain't too many of them";
+            var allowedModules = new[] {"Help", "Info"};
+            var commands = service.Modules
+                .Where(m => allowedModules.Contains(m.Name))
+                .SelectMany(m => m.Commands).ToArray();
 
-            if (!string.IsNullOrWhiteSpace(command))
-            {
-                var result = service.Search(Context, command);
-
-                if (result.IsSuccess)
-                {
-                    commands = result.Commands.Select(c => c.Command).ToArray();
-                    description = $"These are the commands you can use that look like `{command}`";
-                }
-                else
-                    message = $"I don't recognise `{command}`, so here's all the commands";
-            }
-            else
-                commands = service.Modules.SelectMany(m => m.Commands).ToArray();
-
-            if (!commands?.Any() ?? true)
+            if (!commands.Any())
             {
                 await ReplyAsync("I failed to find any commands at all - none whatsoever, from anywhere. That's troubling");
                 await logger.LogWarning("Could not find any commands", "HelpModule");
@@ -56,11 +40,14 @@ namespace DocBot.Modules
             }
 
             var prefix = config["prefix"];
-            var embed = new EmbedBuilder
-            {
-                Color = new Color(100, 149, 237),
-                Description = description
-            };
+            var embed = new EmbedBuilder()
+                .WithColor(new Color(100, 149, 237))
+                .WithDescription("These are the commands you can use. There ain't too many of them")
+                .AddField(f =>
+                {
+                    f.Name = ";doc <documentation> <query>";
+                    f.Value = "Queries a given documentation site. Use `;doc docs` to see all supported sites.";
+                });
 
             foreach (var cmd in commands)
             {
@@ -101,7 +88,7 @@ namespace DocBot.Modules
                 });
             }
 
-            await ReplyAsync(message, embed: embed.Build());
+            await ReplyAsync("", embed: embed.Build());
         }
     }
 }

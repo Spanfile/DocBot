@@ -8,7 +8,7 @@ using DocBot.Services;
 
 namespace DocBot.Modules
 {
-    [Name("info")]
+    [Name("Info")]
     public class InfoModule : ModuleBase<SocketCommandContext>
     {
         private readonly DiscordSocketClient discord;
