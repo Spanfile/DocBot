@@ -25,7 +25,7 @@ namespace DocBot.Services.Documentation
                 using (var textReader = new StreamReader(stream))
                 using (var reader = new JsonTextReader(textReader))
                 {
-                    return InternalGetDocumentationArticles(reader).Take(3).ToList().AsReadOnly();
+                    return InternalGetDocumentationArticles(reader).ToList().AsReadOnly();
                 }
             }
         }

@@ -65,7 +65,7 @@ namespace DocBot.Services
         private async Task DiscordOnLatencyUpdatedAsync(int i, int i1)
         {
             latencies.Push(discord.Latency);
-            await logger.LogDebug($"Gateway latency updated. Average latency: {AverageLatency} ms");
+            await logger.LogDebug($"Gateway latency updated. Average latency: {AverageLatency} ms", "PerformanceService");
         }
 
         public Task WaitNextTick(bool collectOnNextTick = false)

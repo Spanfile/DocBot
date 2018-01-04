@@ -78,8 +78,11 @@ namespace DocBot.Services
 
             var articles = cache.Get(query);
 
-            if (articles == null)
+            if (articles != null)
+                await logger.LogDebug("Query found in cache", "DocumentationService");
+            else
             {
+                await logger.LogDebug("Query not in cache", "DocumentationService");
                 articles = await docProvider.SearchArticles(query);
                 cache.Add(query, articles, docProvider.CacheTTL);
             }
@@ -91,7 +94,7 @@ namespace DocBot.Services
                 builder.WithDescription("No results");
             else
             {
-                foreach (var article in articles)
+                foreach (var article in articles.Take(3))
                     article.AddToEmbed(builder);
             }
 
