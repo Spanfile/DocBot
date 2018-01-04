@@ -45,7 +45,6 @@ namespace DocBot.Modules
             var prefix = config["prefix"];
             var embed = new EmbedBuilder()
                 .WithColor(new Color(100, 149, 237))
-                .WithDescription("These are the commands you can use. There ain't too many of them")
                 .AddField(f =>
                 {
                     f.Name = ";doc <documentation> <query>";

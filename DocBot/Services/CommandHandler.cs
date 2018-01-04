@@ -43,7 +43,8 @@ namespace DocBot.Services
                 var result = await commands.ExecuteAsync(context, argPos, provider);
 
                 if (!result.IsSuccess)
-                    await context.Channel.SendMessageAsync(result.ToString());
+                    await context.Channel.SendMessageAsync(
+                        $"I'm not sure what that means. Try `{config["prefix"]}help` or `{config["prefix"]}docs`");
             }
         }
     }

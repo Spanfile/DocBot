@@ -29,7 +29,7 @@ namespace DocBot.Services.Documentation
                     .Append(" - ")
                     .Append(Type);
 
-            valueBuilder.Append($"[Link]({Url})");
+            valueBuilder.Append($"[View]({Url})");
 
             if (!string.IsNullOrWhiteSpace(Description))
                 valueBuilder
