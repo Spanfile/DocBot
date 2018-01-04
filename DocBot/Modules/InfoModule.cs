@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DocBot.Services;
-using Microsoft.Extensions.Configuration;
 
 namespace DocBot.Modules
 {
-    [Name("Info")]
+    [Name("info")]
     public class InfoModule : ModuleBase<SocketCommandContext>
     {
         private readonly DiscordSocketClient discord;
@@ -24,10 +22,10 @@ namespace DocBot.Modules
             this.perf = perf;
         }
 
-        [Command("info")]
+        [Command("diagnostic"), Alias("diag")]
         [Summary("Shows different diagnostic values for the bot")]
-        public async Task Info(
-            [Summary("If set, wait until the next performance service tick, collect unused memory and show diagnostic info")]
+        public async Task Diagnostic(
+            [Summary("If set, wait until the next performance service tick, collect unused memory and show diagnostic info. Requires bot ownership")]
             bool forceCollect = false)
         {
             EmbedBuilder embed;
@@ -35,6 +33,10 @@ namespace DocBot.Modules
 
             if (forceCollect)
             {
+                var ownerId = (await discord.GetApplicationInfoAsync()).Owner.Id;
+                if (Context.User.Id != ownerId)
+                    return;
+
                 embed = new EmbedBuilder()
                     .WithColor(100, 149, 237)
                     .WithDescription("Waiting for next performance service tick...");
