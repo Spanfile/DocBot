@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Text;
+using Discord;
 
 namespace DocBot.Services.Documentation
 {
-    internal class DocumentationArticle
+    public class DocumentationArticle
     {
         public string Name { get; }
         public string URL { get; }
@@ -15,6 +17,23 @@ namespace DocBot.Services.Documentation
             URL = url;
             Description = description;
             Type = type;
+        }
+
+        public void AddToEmbed(EmbedBuilder builder)
+        {
+            var valueBuilder = new StringBuilder();
+            valueBuilder.Append($"[Link]({URL})");
+
+            if (!string.IsNullOrWhiteSpace(Description))
+                valueBuilder
+                    .Append(" - ")
+                    .Append(Description);
+
+            builder.AddField(f =>
+            {
+                f.Name = Name;
+                f.Value = valueBuilder.ToString();
+            });
         }
     }
 }

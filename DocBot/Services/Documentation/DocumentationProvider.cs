@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services.Documentation
 {
@@ -10,7 +12,26 @@ namespace DocBot.Services.Documentation
         public abstract string[] Aliases { get; }
         // ReSharper disable once InconsistentNaming
         public abstract string SearchURLFormat { get; }
+        // ReSharper disable once InconsistentNaming
+        public abstract string BaseURL { get; }
 
-        protected abstract IEnumerable<DocumentationArticle> GetDocumentationArticles(HtmlDocument doc);
+        public abstract TimeSpan CacheTTL { get; }
+
+        protected HtmlWeb HtmlWeb;
+
+        protected DocumentationProvider(IServiceProvider serviceProvider)
+        {
+            HtmlWeb = serviceProvider.GetRequiredService<HtmlWeb>();
+        }
+
+        public async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
+        {
+            // TODO: make sure this is safe
+            var url = string.Format(SearchURLFormat, query);
+            var doc = await HtmlWeb.LoadFromWebAsync(url);
+            return InternalGetDocumentationArticles(doc);
+        }
+
+        protected abstract IReadOnlyList<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc);
     }
 }

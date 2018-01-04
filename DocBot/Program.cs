@@ -5,6 +5,8 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DocBot.Services;
+using DocBot.Services.Documentation;
+using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,15 +45,19 @@ namespace DocBot
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<StartupService>()
                 .AddSingleton<PerformanceService>()
-                .AddSingleton<DocumentationService>();
+                .AddSingleton<DocumentationCacheService>()
+                .AddSingleton<DocumentationService>()
+                .AddSingleton(new HtmlWeb {UserAgent = config["useragent"]});
 
             var provider = services.BuildServiceProvider();
 
             var logger = provider.GetRequiredService<LoggingService>();
             await logger.LogInfo($"DocBot version {Assembly.GetEntryAssembly().GetName().Version}");
 
+            // initialise the services that have to be explicitly initialised
             await provider.GetRequiredService<StartupService>().StartAsync();
             await provider.GetRequiredService<DocumentationService>().StartAsync();
+            await provider.GetRequiredService<DocumentationCacheService>().Load();
 
             // initialise the rest of the services
             provider.GetRequiredService<CommandHandler>();
