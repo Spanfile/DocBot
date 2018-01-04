@@ -24,7 +24,7 @@ namespace DocBot.Modules
 
         [Command("info")]
         [Summary("Shows information about the bot")]
-        public async Task Info()
+        public async Task InfoAsync()
         {
             var embed = new EmbedBuilder()
                 .WithColor(100, 149, 237)
@@ -38,7 +38,7 @@ namespace DocBot.Modules
 
         [Command("diagnostic"), Alias("diag")]
         [Summary("Shows different diagnostic values for the bot")]
-        public async Task Diagnostic(
+        public async Task DiagnosticAsync(
             [Summary("If set, wait until the next performance service tick, collect unused memory and show diagnostic info. Requires bot ownership")]
             bool forceCollect = false)
         {

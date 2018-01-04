@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -15,12 +16,14 @@ namespace DocBot.Modules
         private readonly CommandService service;
         private readonly IConfigurationRoot config;
         private readonly LoggingService logger;
+        private readonly DocumentationService docService;
 
-        public HelpModule(CommandService service, IConfigurationRoot config, LoggingService logger)
+        public HelpModule(CommandService service, IConfigurationRoot config, LoggingService logger, DocumentationService docService)
         {
             this.service = service;
             this.config = config;
             this.logger = logger;
+            this.docService = docService;
         }
 
         [Command("help")]
@@ -46,7 +49,7 @@ namespace DocBot.Modules
                 .AddField(f =>
                 {
                     f.Name = ";doc <documentation> <query>";
-                    f.Value = "Queries a given documentation site. Use `;doc docs` to see all supported sites.";
+                    f.Value = "Queries a given documentation site";
                 });
 
             foreach (var cmd in commands)
@@ -85,6 +88,57 @@ namespace DocBot.Modules
                 {
                     f.Name = nameBuilder.ToString();
                     f.Value = valueBuilder.ToString();
+                });
+            }
+
+            await ReplyAsync("", embed: embed.Build());
+        }
+
+        [Command("docs")]
+        [Summary("Shows all available documentation sites and their aliases")]
+        public async Task DocsAsync(
+            [Remainder]
+            [Summary("Show information about a specific documentation site")]
+            string doc = null)
+        {
+            var embed = new EmbedBuilder()
+                .WithColor(new Color(100, 149, 237));
+
+            if (!string.IsNullOrWhiteSpace(doc))
+            {
+                var provider = docService.DocumentationProviders.SingleOrDefault(p => p.Aliases.Append(p.FriendlyName).Contains(doc));
+                if (provider == null)
+                    embed.WithDescription("Sorry, I couldn't find a documentation provider like that");
+                else
+                {
+                    var valueBuilder = new StringBuilder();
+                    valueBuilder
+                        .Append("Aliases: ")
+                        .AppendJoin(", ", provider.Aliases)
+                        .AppendLine()
+                        .Append("Base URL: ")
+                        .AppendLine(provider.BaseURL)
+                        .Append("Search URL: ")
+                        .Append(provider.SearchURLFormat.Trim('{', '}'));
+
+                    embed.AddField(f =>
+                    {
+                        f.Name = provider.FriendlyName;
+                        f.Value = valueBuilder.ToString();
+                    });
+
+                    await ReplyAsync("", embed: embed.Build());
+                    return;
+                }
+            }
+
+            foreach (var provider in docService.DocumentationProviders)
+            {
+                embed.AddField(f =>
+                {
+                    f.Name = provider.FriendlyName;
+                    f.Value = string.Join(", ", provider.Aliases);
+                    f.IsInline = true;
                 });
             }
 

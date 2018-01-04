@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services.Documentation
 {
-    internal abstract class DocumentationProvider
+    public abstract class DocumentationProvider
     {
         public abstract string FriendlyName { get; }
         public abstract string[] Aliases { get; }

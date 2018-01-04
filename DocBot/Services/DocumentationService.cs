@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using DocBot.Services.Documentation;
-using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services
 {
     public class DocumentationService
     {
+        public IReadOnlyList<DocumentationProvider> DocumentationProviders => documentationProviders.AsReadOnly();
+
         private readonly CommandService commands;
         private readonly IConfigurationRoot config;
         private readonly LoggingService logger;
         private readonly DocumentationCacheService cache;
         private readonly IServiceProvider provider;
+        private readonly List<DocumentationProvider> documentationProviders;
 
         public DocumentationService(CommandService commands, IConfigurationRoot config, LoggingService logger, DocumentationCacheService cache, IServiceProvider provider)
         {
@@ -26,6 +28,8 @@ namespace DocBot.Services
             this.logger = logger;
             this.cache = cache;
             this.provider = provider;
+
+           documentationProviders = new List<DocumentationProvider>();
         }
 
         public async Task StartAsync()
@@ -39,6 +43,7 @@ namespace DocBot.Services
                 foreach (var type in types)
                 {
                     var instance = (DocumentationProvider)Activator.CreateInstance(type, provider);
+                    documentationProviders.Add(instance);
 
                     builder.AddCommand(instance.Aliases[0], async (context, args, provider, commandInfo) =>
                         await FindInDocs(instance, (string)args[0], context), cmdBuilder =>
