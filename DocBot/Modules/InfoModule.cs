@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DocBot.Services;
+using DocBot.Services.Documentation;
 
 namespace DocBot.Modules
 {
@@ -15,13 +16,15 @@ namespace DocBot.Modules
         private readonly LoggingService logger;
         private readonly PerformanceService perf;
         private readonly BotInfoService botInfo;
+        private readonly DocumentationCacheService cache;
 
-        public InfoModule(DiscordSocketClient discord, LoggingService logger, PerformanceService perf, BotInfoService botInfo)
+        public InfoModule(DiscordSocketClient discord, LoggingService logger, PerformanceService perf, BotInfoService botInfo, DocumentationCacheService cache)
         {
             this.discord = discord;
             this.logger = logger;
             this.perf = perf;
             this.botInfo = botInfo;
+            this.cache = cache;
         }
 
         [Command("info")]
@@ -66,10 +69,9 @@ namespace DocBot.Modules
             embed = new EmbedBuilder()
                 .WithColor(100, 149, 237)
                 .AddInlineField("Gateway latency", $"{perf.AverageLatency:.##} ms")
-                .AddInlineField("Heap memory use", $"{perf.AverageHeapMemory / 1_000_000f:.##}MB")
-                .AddInlineField("Process memory use", $"{perf.AverageProcessMemory / 1_000_000f:.##}MB")
-                .AddInlineField("GC max generations", $"{GC.MaxGeneration}")
-                .AddInlineField("Generation 0 collections", $"{GC.CollectionCount(0)}")
+                .AddInlineField("Memory", $"Heap: {perf.AverageHeapMemory / 1_000_000f:.##}MB\nProcess: {perf.AverageProcessMemory / 1_000_000f:.##}MB")
+                .AddInlineField("Cache", $"{cache.Queries} queries\n{cache.Articles} articles")
+                .AddInlineField("GC", $"{GC.MaxGeneration} generations\nGen-0 collections: {GC.CollectionCount(0)}")
                 .WithTimestamp(DateTimeOffset.UtcNow);
 
             if (msg != null)

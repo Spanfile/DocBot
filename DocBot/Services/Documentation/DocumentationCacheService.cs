@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
@@ -7,6 +8,9 @@ namespace DocBot.Services.Documentation
 {
     public class DocumentationCacheService
     {
+        public int Articles => cacheContainers.Values.Sum(c => c.Articles.Count);
+        public int Queries => cacheContainers.Keys.Count;
+
         private readonly IConfigurationRoot config;
         private readonly LoggingService logger;
 
