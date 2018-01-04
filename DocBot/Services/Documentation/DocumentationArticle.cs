@@ -7,25 +7,29 @@ namespace DocBot.Services.Documentation
     public class DocumentationArticle
     {
         public string Name { get; }
-        public string URL { get; }
+        public string Url { get; }
         public string Description { get; }
         public string Type { get; }
 
         public DocumentationArticle(string name, string url, string description = null, string type = null)
         {
             Name = name;
-            URL = url;
+            Url = url;
             Description = description;
             Type = type;
         }
 
         public void AddToEmbed(EmbedBuilder builder)
         {
+            var nameBuilder = new StringBuilder(Name);
             var valueBuilder = new StringBuilder();
 
-            valueBuilder
-                .Append(!string.IsNullOrWhiteSpace(Type) ? $"[{Type}]" : "[Link]")
-                .Append($"({URL})");
+            if (!string.IsNullOrWhiteSpace(Type))
+                nameBuilder
+                    .Append(" - ")
+                    .Append(Type);
+
+            valueBuilder.Append($"[Link]({Url})");
 
             if (!string.IsNullOrWhiteSpace(Description))
                 valueBuilder
@@ -34,7 +38,7 @@ namespace DocBot.Services.Documentation
 
             builder.AddField(f =>
             {
-                f.Name = Name;
+                f.Name = nameBuilder.ToString();
                 f.Value = valueBuilder.ToString();
             });
         }
