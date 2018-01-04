@@ -2,7 +2,19 @@
 
 namespace DocBot.Services.Documentation
 {
-    class DocumentationArticle
+    internal class DocumentationArticle
     {
+        public string Name { get; }
+        public string URL { get; }
+        public string Description { get; }
+        public string Type { get; }
+
+        public DocumentationArticle(string name, string url, string description = null, string type = null)
+        {
+            Name = name;
+            URL = url;
+            Description = description;
+            Type = type;
+        }
     }
 }
