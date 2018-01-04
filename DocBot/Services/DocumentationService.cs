@@ -38,7 +38,7 @@ namespace DocBot.Services
             {
                 foreach (var type in types)
                 {
-                    var instance = (DocumentationProvider)Activator.CreateInstance(type, provider.GetRequiredService<HtmlWeb>());
+                    var instance = (DocumentationProvider)Activator.CreateInstance(type, provider);
 
                     builder.AddCommand(instance.Aliases[0], async (context, args, provider, commandInfo) =>
                         await FindInDocs(instance, (string)args[0], context), cmdBuilder =>
@@ -66,6 +66,11 @@ namespace DocBot.Services
 
         private async Task FindInDocs(DocumentationProvider docProvider, string query, ICommandContext context)
         {
+            var builder = new EmbedBuilder()
+                .WithColor(100, 149, 237)
+                .WithDescription($"Searching the {docProvider.FriendlyName}...");
+            var msg = await context.Channel.SendMessageAsync("", embed: builder.Build());
+
             var articles = cache.Get(query);
 
             if (articles == null)
@@ -74,13 +79,18 @@ namespace DocBot.Services
                 cache.Add(query, articles, docProvider.CacheTTL);
             }
 
-            var builder = new EmbedBuilder()
+            builder = new EmbedBuilder()
                 .WithColor(100, 149, 237);
 
-            foreach (var article in articles)
-                article.AddToEmbed(builder);
+            if (!articles.Any())
+                builder.WithDescription("No results");
+            else
+            {
+                foreach (var article in articles)
+                    article.AddToEmbed(builder);
+            }
 
-            await context.Channel.SendMessageAsync("", embed: builder.Build());
+            await msg.ModifyAsync(f => f.Embed = builder.Build());
         }
     }
 }

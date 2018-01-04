@@ -262,3 +262,6 @@ __pycache__/
 
 # Discord configuration
 config.json
+
+# PhantomJS executable
+phantomjs.exe

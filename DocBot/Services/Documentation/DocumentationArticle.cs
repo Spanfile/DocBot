@@ -22,7 +22,10 @@ namespace DocBot.Services.Documentation
         public void AddToEmbed(EmbedBuilder builder)
         {
             var valueBuilder = new StringBuilder();
-            valueBuilder.Append($"[Link]({URL})");
+
+            valueBuilder
+                .Append(!string.IsNullOrWhiteSpace(Type) ? $"[{Type}]" : "[Link]")
+                .Append($"({URL})");
 
             if (!string.IsNullOrWhiteSpace(Description))
                 valueBuilder

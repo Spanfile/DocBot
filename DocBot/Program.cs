@@ -47,6 +47,7 @@ namespace DocBot
                 .AddSingleton<PerformanceService>()
                 .AddSingleton<DocumentationCacheService>()
                 .AddSingleton<DocumentationService>()
+                .AddSingleton<PhantomJSProvider>()
                 .AddSingleton(new HtmlWeb {UserAgent = config["useragent"]});
 
             var provider = services.BuildServiceProvider();

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services.Documentation
 {
@@ -13,24 +14,18 @@ namespace DocBot.Services.Documentation
         public abstract string SearchURLFormat { get; }
         // ReSharper disable once InconsistentNaming
         public abstract string BaseURL { get; }
-
+        // ReSharper disable once InconsistentNaming
         public abstract TimeSpan CacheTTL { get; }
 
-        protected HtmlWeb HtmlWeb;
+        protected IConfigurationRoot Config;
+        protected IServiceProvider ServiceProvider;
 
-        protected DocumentationProvider(HtmlWeb htmlWeb)
+        protected DocumentationProvider(IServiceProvider serviceProvider)
         {
-            HtmlWeb = htmlWeb;
+            Config = serviceProvider.GetRequiredService<IConfigurationRoot>();
+            ServiceProvider = serviceProvider;
         }
 
-        public async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
-        {
-            // TODO: make sure this is safe
-            var url = string.Format(SearchURLFormat, query);
-            var doc = await HtmlWeb.LoadFromWebAsync(url);
-            return InternalGetDocumentationArticles(doc);
-        }
-
-        protected abstract IReadOnlyList<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc);
+        public abstract Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query);
     }
 }
