@@ -19,11 +19,14 @@ namespace DocBot.Services.Documentation
         {
             var uri = string.Format(SearchURLFormat, query);
             using (var httpClient = new HttpClient())
-            using (var stream = await httpClient.GetStreamAsync(uri))
-            using (var textReader = new StreamReader(stream))
-            using (var reader = new JsonTextReader(textReader))
             {
-                return InternalGetDocumentationArticles(reader).Take(3).ToList().AsReadOnly();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", Config["useragent"]);
+                using (var stream = await httpClient.GetStreamAsync(uri))
+                using (var textReader = new StreamReader(stream))
+                using (var reader = new JsonTextReader(textReader))
+                {
+                    return InternalGetDocumentationArticles(reader).Take(3).ToList().AsReadOnly();
+                }
             }
         }
 
