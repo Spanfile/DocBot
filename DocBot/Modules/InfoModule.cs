@@ -22,6 +22,20 @@ namespace DocBot.Modules
             this.perf = perf;
         }
 
+        [Command("info")]
+        [Summary("Shows information about the bot")]
+        public async Task Info()
+        {
+            var embed = new EmbedBuilder()
+                .WithColor(100, 149, 237)
+                .AddInlineField("Guilds", discord.Guilds.Count)
+                .AddInlineField("Users", discord.Guilds.Sum(g => g.Users.Count))
+                .AddInlineField("Links", "Github | Invite")
+                .WithTimestamp(DateTimeOffset.UtcNow);
+
+            await ReplyAsync("", embed: embed.Build());
+        }
+
         [Command("diagnostic"), Alias("diag")]
         [Summary("Shows different diagnostic values for the bot")]
         public async Task Diagnostic(
@@ -51,11 +65,7 @@ namespace DocBot.Modules
                 .AddInlineField("Process memory use", $"{perf.AverageProcessMemory / 1_000_000f:.##}MB")
                 .AddInlineField("GC max generations", $"{GC.MaxGeneration}")
                 .AddInlineField("Generation 0 collections", $"{GC.CollectionCount(0)}")
-                .AddInlineField("Guilds", discord.Guilds.Count)
-                .AddInlineField("Users", discord.Guilds.Sum(g => g.Users.Count))
-                .WithTimestamp(DateTimeOffset.UtcNow)
-                .WithDescription("Diagnostic data collected over previous " +
-                                 $"{perf.MaxSampleTimeRange / 1000}s");
+                .WithTimestamp(DateTimeOffset.UtcNow);
 
             if (msg != null)
                 await msg.ModifyAsync(f => f.Embed = embed.Build());
