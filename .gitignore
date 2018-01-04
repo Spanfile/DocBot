@@ -265,3 +265,6 @@ config.json
 
 # PhantomJS executable
 phantomjs.exe
+
+# Bot cache
+cache.json
