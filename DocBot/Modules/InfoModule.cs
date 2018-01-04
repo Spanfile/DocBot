@@ -14,12 +14,14 @@ namespace DocBot.Modules
         private readonly DiscordSocketClient discord;
         private readonly LoggingService logger;
         private readonly PerformanceService perf;
+        private readonly BotInfoService botInfo;
 
-        public InfoModule(DiscordSocketClient discord, LoggingService logger, PerformanceService perf)
+        public InfoModule(DiscordSocketClient discord, LoggingService logger, PerformanceService perf, BotInfoService botInfo)
         {
             this.discord = discord;
             this.logger = logger;
             this.perf = perf;
+            this.botInfo = botInfo;
         }
 
         [Command("info")]
@@ -28,8 +30,11 @@ namespace DocBot.Modules
         {
             var embed = new EmbedBuilder()
                 .WithColor(100, 149, 237)
+                .AddField("Uptime", botInfo.Uptime.ToString("d' days , 'h' hours, 'm' minutes and 's' seconds'"))
+                .AddInlineField("Version", botInfo.Version)
                 .AddInlineField("Guilds", discord.Guilds.Count)
                 .AddInlineField("Users", discord.Guilds.Sum(g => g.Users.Count))
+                .AddInlineField("Channels", discord.Guilds.Sum(g => g.Channels.Count))
                 .AddInlineField("Links", "Github | Invite")
                 .WithTimestamp(DateTimeOffset.UtcNow);
 

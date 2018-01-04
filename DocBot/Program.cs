@@ -41,6 +41,8 @@ namespace DocBot
                     LogLevel = globalLogLevel,
                     DefaultRunMode = RunMode.Async
                 }))
+                .AddSingleton<BotInfoService>()
+                .AddSingleton(Assembly.GetEntryAssembly().GetName().Version)
                 .AddSingleton<LoggingService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<StartupService>()
@@ -53,16 +55,16 @@ namespace DocBot
             var provider = services.BuildServiceProvider();
 
             var logger = provider.GetRequiredService<LoggingService>();
-            await logger.LogInfo($"DocBot version {Assembly.GetEntryAssembly().GetName().Version}");
+            await logger.LogInfo($"DocBot version {provider.GetRequiredService<Version>()}");
+
+            provider.GetRequiredService<CommandHandler>();
+            provider.GetRequiredService<PerformanceService>();
+            provider.GetRequiredService<BotInfoService>();
 
             // initialise the services that have to be explicitly initialised
             await provider.GetRequiredService<StartupService>().StartAsync();
             await provider.GetRequiredService<DocumentationService>().StartAsync();
             await provider.GetRequiredService<DocumentationCacheService>().Load();
-
-            // initialise the rest of the services
-            provider.GetRequiredService<CommandHandler>();
-            provider.GetRequiredService<PerformanceService>();
 
             await Task.Delay(-1);
         }
