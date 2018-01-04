@@ -34,13 +34,21 @@ namespace DocBot.Services.Documentation
             if (!string.IsNullOrWhiteSpace(Description))
                 valueBuilder
                     .Append(" - ")
-                    .Append(Description);
+                    .Append(Sanitise(Description));
 
             builder.AddField(f =>
             {
                 f.Name = nameBuilder.ToString();
                 f.Value = valueBuilder.ToString();
             });
+        }
+
+        private static string Sanitise(string text)
+        {
+            return text
+                .Replace("\r", "")
+                .Replace('\n', ' ')
+                .Replace('\t', ' ');
         }
     }
 }
