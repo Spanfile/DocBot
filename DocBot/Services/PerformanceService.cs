@@ -17,7 +17,7 @@ namespace DocBot.Services
         public float AverageProcessMemory => processMemories.Sum() / (float) processMemories.Count;
 
         public int SampleTimeRange =>
-            (latencies.Count + heapMemories.Count + processMemories.Count) / 3 * collectionInterval;
+            (heapMemories.Count + processMemories.Count) / 2 * collectionInterval;
 
         public int MaxSampleTimeRange => sampleLimit * collectionInterval;
 
@@ -55,10 +55,18 @@ namespace DocBot.Services
             signal = new AsyncAutoResetEvent();
 
             updateTimer = new System.Timers.Timer(collectionInterval) {AutoReset = true};
-            updateTimer.Elapsed += UpdateTimerOnElapsed;
+            updateTimer.Elapsed += UpdateTimerOnElapsedAsync;
             updateTimer.Start();
 
+            discord.LatencyUpdated += DiscordOnLatencyUpdatedAsync;
+
             logger.LogDebug($"Collection interval: {collectionInterval} ms. Samples to collect: {sampleLimit}", "PerformanceService");
+        }
+
+        private async Task DiscordOnLatencyUpdatedAsync(int i, int i1)
+        {
+            latencies.Push(discord.Latency);
+            await logger.LogDebug($"Gateway latency updated. Average latency: {AverageLatency} ms");
         }
 
         public Task WaitNextTick(bool collectOnNextTick = false)
@@ -67,7 +75,7 @@ namespace DocBot.Services
             return signal.WaitAsync();
         }
 
-        private async void UpdateTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        private async void UpdateTimerOnElapsedAsync(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             if (collectOnNextTick)
             {
@@ -76,14 +84,12 @@ namespace DocBot.Services
                 GC.Collect();
             }
 
-            latencies.Push(discord.Latency);
             heapMemories.Push(GC.GetTotalMemory(false));
             processMemories.Push(currentProcess.PrivateMemorySize64);
 
             signal.Set();
 
-            await logger.LogDebug("Collection finished.\n\t" +
-                                  $"Average latency: {AverageLatency} ms\n\t" +
+            await logger.LogDebug("Performance collection finished\n\t" +
                                   $"Average heap memory: {AverageHeapMemory / 1_000_000f:.##} MB\n\t" +
                                   $"Average process memory: {AverageProcessMemory / 1_000_000f:.##} MB", "PerformanceService");
         }
