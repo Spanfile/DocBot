@@ -5,18 +5,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace DocBot.Services.Documentation
 {
-    // ReSharper disable once InconsistentNaming
-    internal class PhantomJSProvider
+    internal class PhantomJsProvider
     {
         private readonly IConfigurationRoot config;
 
-        public PhantomJSProvider(IConfigurationRoot config)
+        public PhantomJsProvider(IConfigurationRoot config)
         {
             this.config = config;
         }
 
-        // ReSharper disable once InconsistentNaming
-        public async Task<string> FetchHTML(string url, string indexJs = "index.js")
+        public async Task<string> FetchHtml(string url, string indexJs = "index.js")
         {
             var proc = new Process {
                 StartInfo = new ProcessStartInfo {

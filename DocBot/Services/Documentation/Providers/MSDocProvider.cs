@@ -18,7 +18,7 @@ namespace DocBot.Services.Documentation.Providers
         public override string[] Aliases => new[] {"msdoc", "ms", ".net", "dotnet", "csharp", "cs", "c#"};
         public override string SearchURLFormat => "https://docs.microsoft.com/api/apibrowser/dotnet/search?api-version=0.2&search={0}";
         public override string BaseURL => "https://docs.microsoft.com/en-us/dotnet/api/";
-        public override TimeSpan CacheTTL => TimeSpan.FromHours(1);
+        public override TimeSpan CacheTTL => TimeSpan.FromDays(7);
 
         public MsDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -29,7 +29,8 @@ namespace DocBot.Services.Documentation.Providers
             var serializer = new JsonSerializer();
             var apiResult = serializer.Deserialize<MsDocApiResult>(reader);
 
-            return apiResult.Results.Select(r => new DocumentationArticle(r["displayName"], r["url"], r["description"], r["itemKind"])).ToList();
+            return apiResult.Results.Select(r =>
+                new DocumentationArticle(r["displayName"], r["url"], r["description"], r["itemKind"]));
         }
     }
 }

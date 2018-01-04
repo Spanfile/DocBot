@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services.Documentation
 {
     internal abstract class HtmlDocumentationProvider : DocumentationProvider
     {
+        private readonly PhantomJsProvider phantomJs;
+
         protected HtmlDocumentationProvider(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            phantomJs = serviceProvider.GetRequiredService<PhantomJsProvider>();
         }
 
-        public override Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
+        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
         {
-            throw new InvalidOperationException();
+            var url = string.Format(SearchURLFormat, query);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(await phantomJs.FetchHtml(url));
+            return InternalGetDocumentationArticles(doc).ToList().AsReadOnly();
         }
 
-        protected abstract IReadOnlyList<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc);
+        protected abstract IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc);
     }
 }
