@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services.Documentation
 {
@@ -19,9 +18,9 @@ namespace DocBot.Services.Documentation
 
         protected HtmlWeb HtmlWeb;
 
-        protected DocumentationProvider(IServiceProvider serviceProvider)
+        protected DocumentationProvider(HtmlWeb htmlWeb)
         {
-            HtmlWeb = serviceProvider.GetRequiredService<HtmlWeb>();
+            HtmlWeb = htmlWeb;
         }
 
         public async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)

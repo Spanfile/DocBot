@@ -13,7 +13,7 @@ namespace DocBot.Services.Documentation.Providers
         public override string BaseURL => "https://docs.microsoft.com";
         public override TimeSpan CacheTTL => TimeSpan.FromHours(1);
 
-        public MSDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
+        public MSDocProvider(HtmlWeb htmlWeb) : base(htmlWeb)
         {
         }
 

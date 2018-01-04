@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using DocBot.Services.Documentation;
+using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DocBot.Services
 {
@@ -36,7 +38,7 @@ namespace DocBot.Services
             {
                 foreach (var type in types)
                 {
-                    var instance = (DocumentationProvider)Activator.CreateInstance(type, provider);
+                    var instance = (DocumentationProvider)Activator.CreateInstance(type, provider.GetRequiredService<HtmlWeb>());
 
                     builder.AddCommand(instance.Aliases[0], async (context, args, provider, commandInfo) =>
                         await FindInDocs(instance, (string)args[0], context), cmdBuilder =>
