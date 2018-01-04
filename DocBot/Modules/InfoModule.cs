@@ -70,7 +70,7 @@ namespace DocBot.Modules
                 .WithColor(100, 149, 237)
                 .AddInlineField("Gateway latency", $"{perf.AverageLatency:.##} ms")
                 .AddInlineField("Memory", $"Heap: {perf.AverageHeapMemory / 1_000_000f:.##}MB\nProcess: {perf.AverageProcessMemory / 1_000_000f:.##}MB")
-                .AddInlineField("Cache", $"{cache.Queries} queries\n{cache.Articles} articles")
+                .AddInlineField("Cache", $"{cache.Queries} queries\n{cache.Articles} articles\n{cache.SizeOnDrive / 1_000_000f:.##}MB on drive")
                 .AddInlineField("GC", $"{GC.MaxGeneration} generations\nGen-0 collections: {GC.CollectionCount(0)}")
                 .WithTimestamp(DateTimeOffset.UtcNow);
 
