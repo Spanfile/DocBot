@@ -20,8 +20,13 @@ namespace DocBot.Services.Documentation
         public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
         {
             var url = string.Format(SearchURLFormat, query);
+            var html = await phantomJs.FetchHtml(url);
+
+            if (string.IsNullOrEmpty(html))
+                throw new ArgumentException("PhantomJS returned no data");
+
             var doc = new HtmlDocument();
-            doc.LoadHtml(await phantomJs.FetchHtml(url));
+            doc.LoadHtml(html);
             return InternalGetDocumentationArticles(doc).ToList().AsReadOnly();
         }
 

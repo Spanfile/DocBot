@@ -7,10 +7,12 @@ namespace DocBot.Services.Documentation
 {
     internal class PhantomJsProvider
     {
+        private readonly LoggingService logger;
         private readonly IConfigurationRoot config;
 
-        public PhantomJsProvider(IConfigurationRoot config)
+        public PhantomJsProvider(LoggingService logger, IConfigurationRoot config)
         {
+            this.logger = logger;
             this.config = config;
         }
 
@@ -21,26 +23,31 @@ namespace DocBot.Services.Documentation
                     WindowStyle = ProcessWindowStyle.Hidden,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
-                    RedirectStandardInput = true,
                     FileName = config["phantomjsPath"],
                     Arguments = $"\"{indexJs}\" {url}"
                 }
             };
 
-            var exitTask = GetWaitForExitAsyncTask(proc);
+            await logger.LogDebug("Starting PhantomJS executable", "PhantomJsProvider");
+            var exitTask = CreateWaitForExitTask(proc);
             proc.Start();
 
+            var exitCode = await exitTask;
             var output = await proc.StandardOutput.ReadToEndAsync();
-            await exitTask;
+            await logger.LogDebug($"PhantomJS executable exited with code {exitCode}", "PhantomJsProvider");
 
-            return output;
+            if (exitCode == 0)
+                return output;
+
+            await logger.LogDebug($"PhantomJS exited with non-zero code. Standard output:\n{output}", "PhantomJsProvider");
+            return null;
         }
-
-        private static Task GetWaitForExitAsyncTask(Process proc)
+        
+        private static Task<int> CreateWaitForExitTask(Process proc)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource<int>();
             proc.EnableRaisingEvents = true;
-            proc.Exited += (s, e) => tcs.TrySetResult(null);
+            proc.Exited += (s, e) => tcs.TrySetResult(proc.ExitCode);
             return tcs.Task;
         }
     }

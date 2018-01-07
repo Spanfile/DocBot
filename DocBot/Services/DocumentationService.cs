@@ -83,7 +83,18 @@ namespace DocBot.Services
             else
             {
                 await logger.LogDebug("Query not in cache", "DocumentationService");
-                articles = await docProvider.SearchArticles(query);
+                try
+                {
+                    articles = await docProvider.SearchArticles(query);
+                }
+                catch
+                {
+                    builder = new EmbedBuilder()
+                        .WithColor(100, 149, 237)
+                        .WithDescription("I couldn't find anything because of an error :(");
+                    await msg.ModifyAsync(f => f.Embed = builder.Build());
+                    throw;
+                }
                 await cache.Add(query, articles, docProvider.CacheTTL);
             }
 
