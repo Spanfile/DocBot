@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
+using DocBot.Utilities;
 using Microsoft.Extensions.Configuration;
 
 namespace DocBot.Services.Documentation
@@ -18,37 +20,34 @@ namespace DocBot.Services.Documentation
 
         public async Task<string> FetchHtml(string url, string indexJs = "index.js")
         {
-            var proc = new Process {
-                StartInfo = new ProcessStartInfo {
+            var phantomJsPath = Path.GetFullPath(config["phantomjsPath"]);
+            await logger.LogDebug($"Starting PhantomJS executable ({phantomJsPath})", "PhantomJsProvider");
+
+            using (var proc = Process.Start(new ProcessStartInfo {
                     WindowStyle = ProcessWindowStyle.Hidden,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
-                    FileName = config["phantomjsPath"],
+                    FileName = phantomJsPath,
                     Arguments = $"\"{indexJs}\" {url}"
+                }))
+            {
+                if (proc == null)
+                {
+                    await logger.LogError("No process started","PhantomJsProvider");
+                    return null;
                 }
-            };
 
-            await logger.LogDebug("Starting PhantomJS executable", "PhantomJsProvider");
-            var exitTask = CreateWaitForExitTask(proc);
-            proc.Start();
+                var exitCode = await proc.WaitForExitAsync();
+                var output = await proc.StandardOutput.ReadToEndAsync();
+                await logger.LogDebug($"PhantomJS executable exited with code {exitCode}", "PhantomJsProvider");
 
-            var exitCode = await exitTask;
-            var output = await proc.StandardOutput.ReadToEndAsync();
-            await logger.LogDebug($"PhantomJS executable exited with code {exitCode}", "PhantomJsProvider");
+                if (exitCode == 0)
+                    return output;
 
-            if (exitCode == 0)
-                return output;
-
-            await logger.LogDebug($"PhantomJS exited with non-zero code. Standard output:\n{output}", "PhantomJsProvider");
-            return null;
-        }
-        
-        private static Task<int> CreateWaitForExitTask(Process proc)
-        {
-            var tcs = new TaskCompletionSource<int>();
-            proc.EnableRaisingEvents = true;
-            proc.Exited += (s, e) => tcs.TrySetResult(proc.ExitCode);
-            return tcs.Task;
+                await logger.LogError($"PhantomJS exited with non-zero code. Standard output:\n{output}",
+                    "PhantomJsProvider");
+                return null;
+            }
         }
     }
 }
