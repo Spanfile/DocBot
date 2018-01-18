@@ -28,7 +28,7 @@ namespace DocBot.Services.Documentation.Providers
                                let aTag = item.SelectSingleNode("a")
                                let url = $"{BaseURL}{aTag.Attributes["href"].Value}"
                                let name = aTag.InnerText
-                               let type = item.SelectSingleNode("span").InnerText.Split(' ')[0].Trim(',')
+                               let type = item.SelectSingleNode("span")?.InnerText.Split(' ')[0].Trim(',')
                                select new DocumentationArticle(name, url, type: type)).ToList();
 
             return resultsList.AsEnumerable();

@@ -32,7 +32,6 @@ namespace DocBot.Services.Documentation
                 }
             };
 
-
             await logger.LogDebug($"Starting PhantomJS executable ({phantomJsPath}), using {Path.GetFullPath(indexJs)} to fetch {url}", "PhantomJsProvider");
             proc.Start();
 
