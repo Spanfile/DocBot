@@ -26,7 +26,7 @@ namespace DocBot.Services.Documentation.Providers
 
             var resultsList = (from item in results
                                let aTag = item.SelectSingleNode("a")
-                               let url = aTag.Attributes["href"].Value
+                               let url = $"{BaseURL}{aTag.Attributes["href"].Value}"
                                let name = aTag.InnerText
                                let type = item.SelectSingleNode("span").InnerText.Split(' ')[0].Trim(',')
                                select new DocumentationArticle(name, url, type: type)).ToList();
