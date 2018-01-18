@@ -19,6 +19,8 @@ namespace DocBot.Services.Documentation
             Type = type;
         }
 
+        public bool IsValid() => !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Url);
+
         public void AddToEmbed(EmbedBuilder builder)
         {
             var nameBuilder = new StringBuilder(Name);

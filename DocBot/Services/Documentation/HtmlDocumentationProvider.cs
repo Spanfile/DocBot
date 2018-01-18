@@ -27,7 +27,7 @@ namespace DocBot.Services.Documentation
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
-            return InternalGetDocumentationArticles(doc).ToList().AsReadOnly();
+            return ClearInvalidArticles(InternalGetDocumentationArticles(doc)).ToList().AsReadOnly();
         }
 
         protected abstract IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc);
