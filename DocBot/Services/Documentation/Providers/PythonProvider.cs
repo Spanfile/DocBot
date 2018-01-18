@@ -34,4 +34,16 @@ namespace DocBot.Services.Documentation.Providers
             return resultsList.AsEnumerable();
         }
     }
+
+    internal class Python2Provider : PythonProvider
+    {
+        public override string FriendlyName => "Python 2 documentation";
+        public override string[] Aliases => new[] { "py2", "py2.7" };
+        public override string SearchURLFormat => "https://docs.python.org/2.7/search.html?q={0}";
+        public override string BaseURL => "https://docs.python.org/2.7/";
+
+        public Python2Provider(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+    }
 }
