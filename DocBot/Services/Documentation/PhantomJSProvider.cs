@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using DocBot.Utilities;
 using Microsoft.Extensions.Configuration;
 
 namespace DocBot.Services.Documentation
@@ -28,7 +27,7 @@ namespace DocBot.Services.Documentation
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     FileName = phantomJsPath,
-                    Arguments = $"\"{indexJs}\" {url}"
+                    Arguments = $"\"{indexJs}\" \"{url}\" \"{config["useragent"]}\""
                 }
             };
 

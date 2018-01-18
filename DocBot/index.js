@@ -8,4 +8,5 @@ page.onLoadFinished = function () {
     }, 1000);
 };
 
+page.settings.userAgent = system.args[2];
 page.open(system.args[1]);
