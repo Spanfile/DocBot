@@ -14,7 +14,20 @@ namespace DocBot.Services.Documentation
 
         public int Articles => cacheContainers.Values.Sum(c => c.Articles.Count);
         public int Queries => cacheContainers.Keys.Count;
-        public long FileSize => new FileInfo(CacheFile).Length;
+        public long FileSize
+        {
+            get
+            {
+                try
+                {
+                    return new FileInfo(CacheFile).Length;
+                }
+                catch (FileNotFoundException)
+                {
+                    return 0;
+                }
+            }
+        }
 
         private readonly IConfigurationRoot config;
         private readonly LoggingService logger;
