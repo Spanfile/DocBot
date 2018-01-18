@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using Discord;
 using Discord.Commands;
 using DocBot.Services.Documentation;
@@ -76,12 +78,15 @@ namespace DocBot.Services
                 .WithDescription($"Searching the {docProvider.FriendlyName}...");
             var msg = await context.Channel.SendMessageAsync("", embed: builder.Build());
 
+            var timer = Stopwatch.StartNew();
             var articles = cache.Get(query);
+            var fromCache = true;
 
             if (articles != null)
                 await logger.LogDebug("Query found in cache", "DocumentationService");
             else
             {
+                fromCache = false;
                 await logger.LogDebug("Query not in cache", "DocumentationService");
                 try
                 {
@@ -95,11 +100,21 @@ namespace DocBot.Services
                     await msg.ModifyAsync(f => f.Embed = builder.Build());
                     throw;
                 }
+                finally
+                {
+                    timer.Stop();
+                    await logger.LogDebug($"Query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms",
+                        "DocumentationService");
+                }
                 await cache.Add(query, articles, docProvider.CacheTTL);
             }
 
             builder = new EmbedBuilder()
-                .WithColor(100, 149, 237);
+                .WithColor(100, 149, 237)
+                .WithFooter(
+                fromCache
+                    ? $"This query was retrieved from the cache in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms"
+                    : $"This query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms");
 
             if (!articles.Any())
                 builder.WithDescription("No results");
