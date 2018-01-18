@@ -5,7 +5,7 @@ using HtmlAgilityPack;
 
 namespace DocBot.Services.Documentation.Providers
 {
-    internal class Python3Provider : HtmlDocumentationProvider
+    internal class PythonProvider : HtmlDocumentationProvider
     {
         public override string FriendlyName => "Python 3 documentation";
         public override string[] Aliases => new[] {"python", "py", "py3"};
@@ -13,7 +13,7 @@ namespace DocBot.Services.Documentation.Providers
         public override string BaseURL => "https://docs.python.org/3/";
         public override TimeSpan CacheTTL => TimeSpan.FromDays(7);
 
-        public Python3Provider(IServiceProvider serviceProvider) : base(serviceProvider)
+        public PythonProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
