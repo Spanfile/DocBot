@@ -79,7 +79,7 @@ namespace DocBot.Services
             var msg = await context.Channel.SendMessageAsync("", embed: builder.Build());
 
             var timer = Stopwatch.StartNew();
-            var articles = cache.Get(query);
+            var articles = cache.Get(docProvider.FriendlyName, query);
             var fromCache = true;
 
             if (articles != null)
@@ -106,7 +106,7 @@ namespace DocBot.Services
                     await logger.LogDebug($"Query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms",
                         "DocumentationService");
                 }
-                await cache.Add(query, articles, docProvider.CacheTTL);
+                await cache.Add(docProvider.FriendlyName, query, articles, docProvider.CacheTTL);
             }
 
             builder = new EmbedBuilder()

@@ -47,22 +47,24 @@ namespace DocBot.Services.Documentation
             await File.WriteAllTextAsync(CacheFile, JsonConvert.SerializeObject(cacheContainers));
         }
 
-        public IReadOnlyList<DocumentationArticle> Get(string search)
+        public IReadOnlyList<DocumentationArticle> Get(string doc, string search)
         {
-            if (!cacheContainers.TryGetValue(search, out var container))
+            var searchValue = doc + search;
+            if (!cacheContainers.TryGetValue(searchValue, out var container))
                 return null;
 
             if (!container.Expired)
                 return container.Articles;
 
-            cacheContainers.Remove(search);
+            cacheContainers.Remove(searchValue);
 
             return null;
         }
 
-        public async Task Add(string search, IReadOnlyList<DocumentationArticle> articles, TimeSpan ttl)
+        public async Task Add(string doc, string search, IReadOnlyList<DocumentationArticle> articles, TimeSpan ttl)
         {
-            cacheContainers.TryAdd(search, new DocumentationCacheContainer(articles, ttl));
+            var searchValue = doc + search;
+            cacheContainers.TryAdd(searchValue, new DocumentationCacheContainer(articles, ttl));
             await Save();
         }
     }
