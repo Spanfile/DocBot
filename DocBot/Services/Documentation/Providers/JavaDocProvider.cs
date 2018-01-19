@@ -18,7 +18,11 @@ namespace DocBot.Services.Documentation.Providers
 
         protected override IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc)
         {
-            throw new NotImplementedException();
+            var resultNodeContainer = doc.DocumentNode.SelectSingleNode("//*[@class='ui-id-1']");
+            foreach (var child in resultNodeContainer.SelectNodes("/li[@class='resultItem']"))
+            {
+                yield return new DocumentationArticle(child.InnerText, BaseURL);
+            }
         }
     }
 }

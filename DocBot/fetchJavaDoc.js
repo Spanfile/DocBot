@@ -2,14 +2,13 @@
 system = require('system');
 
 page.onLoadFinished = function () {
-    console.log(system.args[3]);
-    page.evaluate(function() {
-        document.getElementById('search').value = system.args[3];
-    });
+    page.evaluate(function(query) {
+        document.getElementById('search').value = query;
+    }, system.args[3]);
     setTimeout(function() {
         console.log(page.content);
         phantom.exit();
-    }, 500);
+    }, 1000);
 };
 
 page.settings.userAgent = system.args[2];
