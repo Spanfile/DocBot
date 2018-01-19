@@ -11,7 +11,6 @@ namespace DocBot.Services.Documentation.Providers
         public override string[] Aliases => new[] {"python", "py", "py3"};
         public override string SearchURLFormat => "https://docs.python.org/3/search.html?q={0}";
         public override string BaseURL => "https://docs.python.org/3/";
-        public override TimeSpan CacheTTL => TimeSpan.FromDays(7);
 
         public PythonDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {

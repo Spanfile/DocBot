@@ -16,7 +16,7 @@ namespace DocBot.Services.Documentation
         // ReSharper disable once InconsistentNaming
         public abstract string BaseURL { get; }
         // ReSharper disable once InconsistentNaming
-        public abstract TimeSpan CacheTTL { get; }
+        public virtual TimeSpan CacheTTL { get; } = TimeSpan.FromDays(7);
 
         protected IConfigurationRoot Config;
         protected IServiceProvider ServiceProvider;

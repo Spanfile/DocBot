@@ -18,7 +18,6 @@ namespace DocBot.Services.Documentation.Providers
         public override string[] Aliases => new[] {"msdoc", "ms", ".net", "dotnet", "csharp", "cs", "c#"};
         public override string SearchURLFormat => "https://docs.microsoft.com/api/apibrowser/dotnet/search?api-version=0.2&search={0}";
         public override string BaseURL => "https://docs.microsoft.com/en-us/dotnet/api/";
-        public override TimeSpan CacheTTL => TimeSpan.FromDays(7);
 
         public MsDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
