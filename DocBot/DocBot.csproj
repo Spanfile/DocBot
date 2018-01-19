@@ -24,7 +24,7 @@
     <None Update="phantomjs.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="index.js">
+    <None Update="fetchPage.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

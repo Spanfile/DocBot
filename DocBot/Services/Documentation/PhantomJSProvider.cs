@@ -18,7 +18,7 @@ namespace DocBot.Services.Documentation
             this.config = config;
         }
 
-        public async Task<string> FetchHtml(string url, string indexJs = "index.js")
+        public async Task<string> FetchHtml(string url, string jsFile = "fetchPage.js")
         {
             var phantomJsPath = Path.GetFullPath(config["phantomjsPath"]);
             var proc = new Process {
@@ -27,11 +27,11 @@ namespace DocBot.Services.Documentation
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     FileName = phantomJsPath,
-                    Arguments = $"\"{indexJs}\" \"{url}\" \"{config["useragent"]}\""
+                    Arguments = $"\"{jsFile}\" \"{url}\" \"{config["useragent"]}\""
                 }
             };
 
-            await logger.LogDebug($"Starting PhantomJS executable ({phantomJsPath}), using {Path.GetFullPath(indexJs)} to fetch {url}", "PhantomJsProvider");
+            await logger.LogDebug($"Starting PhantomJS executable ({phantomJsPath}), using {Path.GetFullPath(jsFile)} to fetch {url}", "PhantomJsProvider");
             proc.Start();
 
             var outputBuilder = new StringBuilder();
