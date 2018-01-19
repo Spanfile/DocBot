@@ -21,8 +21,18 @@ namespace DocBot.Services.Documentation
 
         public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
         {
-            var url = string.IsNullOrEmpty(SearchURLFormat) ? BaseURL : string.Format(SearchURLFormat, query);
-            var html = await phantomJs.FetchHtml(url, FetchScript);
+            string url;
+            string html;
+            if (string.IsNullOrEmpty(SearchURLFormat))
+            {
+                url = BaseURL;
+                html = await phantomJs.FetchHtml(url, FetchScript, query);
+            }
+            else
+            {
+                url = string.Format(SearchURLFormat, query);
+                html = await phantomJs.FetchHtml(url, FetchScript);
+            }
 
             if (string.IsNullOrEmpty(html))
                 throw new ArgumentException("PhantomJS returned no data");

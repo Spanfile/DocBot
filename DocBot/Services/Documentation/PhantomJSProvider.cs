@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ namespace DocBot.Services.Documentation
             this.config = config;
         }
 
-        public async Task<string> FetchHtml(string url, string jsFile = "fetchPage.js")
+        public async Task<string> FetchHtml(string url, string jsFile = "fetchPage.js", params string[] extraArgs)
         {
             var phantomJsPath = Path.GetFullPath(config["phantomjsPath"]);
             var proc = new Process {
@@ -27,7 +28,7 @@ namespace DocBot.Services.Documentation
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     FileName = phantomJsPath,
-                    Arguments = $"\"{jsFile}\" \"{url}\" \"{config["useragent"]}\""
+                    Arguments = $"\"{jsFile}\" \"{url}\" \"{config["useragent"]}\" {string.Join(" ", extraArgs.Select(a => $"\"{a}\""))}"
                 }
             };
 
