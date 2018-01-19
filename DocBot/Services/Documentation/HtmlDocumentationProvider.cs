@@ -21,7 +21,7 @@ namespace DocBot.Services.Documentation
 
         public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
         {
-            var url = string.Format(SearchURLFormat, query);
+            var url = string.IsNullOrEmpty(SearchURLFormat) ? BaseURL : string.Format(SearchURLFormat, query);
             var html = await phantomJs.FetchHtml(url, FetchScript);
 
             if (string.IsNullOrEmpty(html))
