@@ -5,7 +5,7 @@ using HtmlAgilityPack;
 
 namespace DocBot.Services.Documentation.Providers
 {
-    internal class PythonProvider : HtmlDocumentationProvider
+    internal class PythonDocProvider : HtmlDocumentationProvider
     {
         public override string FriendlyName => "Python 3 documentation";
         public override string[] Aliases => new[] {"python", "py", "py3"};
@@ -13,7 +13,7 @@ namespace DocBot.Services.Documentation.Providers
         public override string BaseURL => "https://docs.python.org/3/";
         public override TimeSpan CacheTTL => TimeSpan.FromDays(7);
 
-        public PythonProvider(IServiceProvider serviceProvider) : base(serviceProvider)
+        public PythonDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
@@ -35,14 +35,14 @@ namespace DocBot.Services.Documentation.Providers
         }
     }
 
-    internal class Python2Provider : PythonProvider
+    internal class Python2DocProvider : PythonDocProvider
     {
         public override string FriendlyName => "Python 2 documentation";
         public override string[] Aliases => new[] { "py2", "py2.7" };
         public override string SearchURLFormat => "https://docs.python.org/2.7/search.html?q={0}";
         public override string BaseURL => "https://docs.python.org/2.7/";
 
-        public Python2Provider(IServiceProvider serviceProvider) : base(serviceProvider)
+        public Python2DocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }
