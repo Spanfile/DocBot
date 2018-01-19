@@ -9,6 +9,8 @@ namespace DocBot.Services.Documentation
 {
     internal abstract class HtmlDocumentationProvider : DocumentationProvider
     {
+        public virtual string FetchScript { get; } = "fetchPage.js";
+
         private readonly PhantomJsProvider phantomJs;
 
         protected HtmlDocumentationProvider(IServiceProvider serviceProvider)
@@ -20,7 +22,7 @@ namespace DocBot.Services.Documentation
         public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
         {
             var url = string.Format(SearchURLFormat, query);
-            var html = await phantomJs.FetchHtml(url);
+            var html = await phantomJs.FetchHtml(url, FetchScript);
 
             if (string.IsNullOrEmpty(html))
                 throw new ArgumentException("PhantomJS returned no data");
