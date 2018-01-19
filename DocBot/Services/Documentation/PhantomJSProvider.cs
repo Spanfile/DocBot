@@ -27,6 +27,7 @@ namespace DocBot.Services.Documentation
                     WindowStyle = ProcessWindowStyle.Hidden,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     FileName = phantomJsPath,
                     Arguments = $"\"{jsFile}\" \"{url}\" \"{config["useragent"]}\" {string.Join(" ", extraArgs.Select(a => $"\"{a}\""))}"
                 }
@@ -37,6 +38,7 @@ namespace DocBot.Services.Documentation
 
             var outputBuilder = new StringBuilder();
             proc.OutputDataReceived += (s, e) => outputBuilder.Append(e.Data);
+            proc.ErrorDataReceived += async (s, e) => await logger.LogError($"PhantomJS error: {e.Data}");
             proc.BeginOutputReadLine();
 
             proc.WaitForExit();
