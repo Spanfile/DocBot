@@ -2,7 +2,10 @@
 system = require('system');
 
 page.onLoadFinished = function () {
-    document.getElementById('search').value = system.args[3];
+    console.log(system.args[3]);
+    page.evaluate(function() {
+        document.getElementById('search').value = system.args[3];
+    });
     setTimeout(function() {
         console.log(page.content);
         phantom.exit();
