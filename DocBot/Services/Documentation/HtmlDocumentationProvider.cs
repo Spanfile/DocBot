@@ -26,11 +26,13 @@ namespace DocBot.Services.Documentation
             if (string.IsNullOrEmpty(SearchURLFormat))
             {
                 url = BaseURL;
+                await Logger.LogDebug($"Using base URL {url}");
                 html = await phantomJs.FetchHtml(url, FetchScript, query);
             }
             else
             {
                 url = string.Format(SearchURLFormat, query);
+                await Logger.LogDebug($"Using search URL {url}");
                 html = await phantomJs.FetchHtml(url, FetchScript);
             }
 

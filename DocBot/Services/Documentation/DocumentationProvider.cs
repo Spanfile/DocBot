@@ -20,10 +20,12 @@ namespace DocBot.Services.Documentation
 
         protected IConfigurationRoot Config;
         protected IServiceProvider ServiceProvider;
+        protected LoggingService Logger;
 
         protected DocumentationProvider(IServiceProvider serviceProvider)
         {
             Config = serviceProvider.GetRequiredService<IConfigurationRoot>();
+            Logger = serviceProvider.GetRequiredService<LoggingService>();
             ServiceProvider = serviceProvider;
         }
 
