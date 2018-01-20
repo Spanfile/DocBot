@@ -18,10 +18,15 @@ namespace DocBot.Services.Documentation.Providers
 
         protected override IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc)
         {
-            var resultNodeContainer = doc.DocumentNode.SelectSingleNode("//*[@class='ui-id-1']");
-            foreach (var child in resultNodeContainer.SelectNodes("/li[@class='resultItem']"))
+            var resultNodeContainer = doc.DocumentNode.SelectSingleNode("//*[@id='ui-id-1']");
+            var currentType = "";
+            foreach (var child in resultNodeContainer.ChildNodes)
             {
-                yield return new DocumentationArticle(child.InnerText, BaseURL);
+                if (child.HasClass("ui-autocomplete-category"))
+                    currentType = child.InnerText.Trim('s');
+
+                if (child.HasClass("resultItem"))
+                    yield return new DocumentationArticle(child.InnerText, BaseURL, type: currentType);
             }
         }
     }
