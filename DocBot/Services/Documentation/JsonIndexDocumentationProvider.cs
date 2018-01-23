@@ -18,18 +18,18 @@ namespace DocBot.Services.Documentation
         }
 
         public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
-        {
-            if (!File.Exists(IndexLocation))
-            {
-                await Logger.LogError($"Invalid index location: {IndexLocation}", "JsonIndexDocumentationProvider");
-                throw new FileNotFoundException("", IndexLocation);
-            }
-            
+        {            
             var file = IndexLocation + ".gz";
             var useCompressed = File.Exists(file);
 
             if (!useCompressed)
             {
+                if (!File.Exists(IndexLocation))
+                {
+                    await Logger.LogError($"Invalid index location: {IndexLocation}", "JsonIndexDocumentationProvider");
+                    throw new FileNotFoundException("", IndexLocation);
+                }
+
                 await Logger.LogWarning($"Using non-compressed index ({IndexLocation})",
                     "JsonIndexDocumentationProvider");
                 file = IndexLocation;
@@ -46,7 +46,7 @@ namespace DocBot.Services.Documentation
 
                 using (var textReader = new StreamReader(stream))
                 using (var jsonReader = new JsonTextReader(textReader))
-                    articles = ClearInvalidArticles(InternalGetDocumentationArticle(jsonReader)).ToList().AsReadOnly();
+                    articles = ClearInvalidArticles(await InternalGetDocumentationArticle(jsonReader, query)).ToList().AsReadOnly();
 
                 if (useCompressed)
                     stream.Dispose();
@@ -55,6 +55,6 @@ namespace DocBot.Services.Documentation
             }
         }
 
-        protected abstract IEnumerable<DocumentationArticle> InternalGetDocumentationArticle(JsonTextReader reader);
+        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticle(JsonTextReader reader, string query);
     }
 }

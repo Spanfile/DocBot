@@ -24,6 +24,9 @@
     <None Update="fetchJavaDoc.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="java-index.json.gz">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="phantomjs.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
