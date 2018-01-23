@@ -24,9 +24,7 @@ namespace DocBot.Services.Documentation
                 using (var stream = await httpClient.GetStreamAsync(uri))
                 using (var textReader = new StreamReader(stream))
                 using (var reader = new JsonTextReader(textReader))
-                {
                     return ClearInvalidArticles(InternalGetDocumentationArticles(reader)).ToList().AsReadOnly();
-                }
             }
         }
 
