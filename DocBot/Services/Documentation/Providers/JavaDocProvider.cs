@@ -44,28 +44,28 @@ namespace DocBot.Services.Documentation.Providers
             var index = serialiser.Deserialize<IndexObject[]>(reader);
             await Logger.LogDebug($"{index.Length} objects loaded from index", "JavaDocProvider");
 
-            var queryArgs = query.ToLowerInvariant().Split('.');
-            var actualQuery = queryArgs[queryArgs.Length - 1];
-
+            var lowerQuery = query.ToLowerInvariant();
             var matches = new List<(int, IndexObject)>();
             foreach (var indexObj in index)
             {
-                var nameArgs = indexObj.FullName.ToLowerInvariant().Split('.');
-                var exactIndex = Array.IndexOf(nameArgs, actualQuery);
+                var fullLowerName = indexObj.FullName.ToLowerInvariant();
+                var foundIndex = fullLowerName.IndexOf(lowerQuery, StringComparison.Ordinal);
 
-                if (exactIndex == -1) // exact match not found, check for the last elements
+                if (foundIndex == -1)
+                    continue;
+
+                // calculate the closest period to the left. the closer it is, the more accurate the matched query is
+                var periodIndex = foundIndex - 1;
+                while (periodIndex >= 0)
                 {
-                    var lastName = nameArgs[nameArgs.Length - 1];
-                    if (lastName.Contains(actualQuery))
-                    {
-                        // query found as substring - rank based on length difference: larger length difference = less equal match
-                        matches.Add((lastName.Length - actualQuery.Length, indexObj));
-                    }
+                    if (fullLowerName[periodIndex] == '.')
+                        break;
+
+                    periodIndex -= 1;
                 }
-                else // exact index found, rank based on how close to the end the match is by characters
-                {
-                    matches.Add((nameArgs.Skip(exactIndex + 1).Sum(s => s.Length), indexObj));
-                }
+
+                var rank = indexObj.FullName.Length - (foundIndex + query.Length) + (foundIndex - 1 - periodIndex);
+                matches.Add((rank, indexObj));
             }
 
             await Logger.LogDebug($"{matches.Count} matches found", "JavaDocProvider");
