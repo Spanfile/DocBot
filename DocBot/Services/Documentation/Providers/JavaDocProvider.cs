@@ -44,7 +44,8 @@ namespace DocBot.Services.Documentation.Providers
             var index = serialiser.Deserialize<IndexObject[]>(reader);
             await Logger.LogDebug($"{index.Length} objects loaded from index", "JavaDocProvider");
 
-            var lowerQuery = query.ToLowerInvariant();
+            var sanitisedQuery = query.Trim('.');
+            var lowerQuery = sanitisedQuery.ToLowerInvariant();
             var matches = new List<(int, IndexObject)>();
             foreach (var indexObj in index)
             {
@@ -64,7 +65,7 @@ namespace DocBot.Services.Documentation.Providers
                     periodIndex -= 1;
                 }
 
-                var rank = indexObj.FullName.Length - (foundIndex + query.Length) + (foundIndex - 1 - periodIndex);
+                var rank = indexObj.FullName.Length - (foundIndex + sanitisedQuery.Length) + (foundIndex - 1 - periodIndex);
                 matches.Add((rank, indexObj));
             }
 
