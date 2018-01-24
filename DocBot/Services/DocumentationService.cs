@@ -109,6 +109,8 @@ namespace DocBot.Services
                 await cache.Add(docProvider.FriendlyName, query, articles, docProvider.CacheTTL);
             }
 
+            await logger.LogDebug($"{articles.Count} articles found", "DocumentationService");
+
             builder = new EmbedBuilder()
                 .WithColor(100, 149, 237)
                 .WithFooter(

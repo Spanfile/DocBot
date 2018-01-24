@@ -69,8 +69,6 @@ namespace DocBot.Services.Documentation.Providers
                 matches.Add((rank, indexObj));
             }
 
-            await Logger.LogDebug($"{matches.Count} matches found", "JavaDocProvider");
-
             var sorted =
                 from match in matches
                 orderby match.Item1, ObjectTypeToInt(match.Item2.ObjectType), match.Item2.FullName
