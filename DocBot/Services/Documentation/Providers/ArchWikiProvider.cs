@@ -22,7 +22,7 @@ namespace DocBot.Services.Documentation.Providers
         {
         }
 
-        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(JsonTextReader reader)
+        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(JsonTextReader reader)
         {
             var serialiser = new JsonSerializer();
             var apiResults = (JArray)serialiser.Deserialize(reader);

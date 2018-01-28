@@ -15,7 +15,7 @@ namespace DocBot.Services.Documentation
         {
         }
 
-        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
+        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticlesAsync(string query)
         {
             var uri = string.Format(SearchUrlFormat, query);
             using (var httpClient = new HttpClient())
@@ -24,11 +24,11 @@ namespace DocBot.Services.Documentation
                 using (var stream = await httpClient.GetStreamAsync(uri))
                 using (var textReader = new StreamReader(stream))
                 using (var reader = new JsonTextReader(textReader))
-                    return ClearInvalidArticles(await InternalGetDocumentationArticles(reader))?.ToList()
+                    return ClearInvalidArticles(await InternalGetArticlesAsync(reader))?.ToList()
                         .AsReadOnly();
             }
         }
 
-        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(JsonTextReader reader);
+        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(JsonTextReader reader);
     }
 }

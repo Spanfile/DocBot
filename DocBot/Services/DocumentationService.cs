@@ -104,7 +104,7 @@ namespace DocBot.Services
                 await logger.LogDebug("Query not in cache", "DocumentationService");
                 try
                 {
-                    articles = await docProvider.SearchArticles(query);
+                    articles = await docProvider.SearchArticlesAsync(query);
                 }
                 catch (Exception ex)
                 {

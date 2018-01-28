@@ -17,7 +17,7 @@ namespace DocBot.Services.Documentation.Providers
         {
         }
 
-        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(HtmlDocument doc)
+        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(HtmlDocument doc)
         {
             var results = doc.DocumentNode.SelectNodes("//ul[@class='search']/*");
 

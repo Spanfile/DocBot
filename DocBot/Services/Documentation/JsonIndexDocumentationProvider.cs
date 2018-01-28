@@ -18,7 +18,7 @@ namespace DocBot.Services.Documentation
         {
         }
 
-        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
+        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticlesAsync(string query)
         {            
             var file = IndexLocation + ".gz";
             var useCompressed = File.Exists(file);
@@ -47,7 +47,7 @@ namespace DocBot.Services.Documentation
 
                 using (var textReader = new StreamReader(stream))
                 using (var jsonReader = new JsonTextReader(textReader))
-                    articles = ClearInvalidArticles(await InternalGetDocumentationArticle(jsonReader, query))?.ToList()
+                    articles = ClearInvalidArticles(await InternalGetArticlesAsync(jsonReader, query))?.ToList()
                         .AsReadOnly();
 
                 if (useCompressed)
@@ -57,6 +57,6 @@ namespace DocBot.Services.Documentation
             }
         }
 
-        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticle(JsonTextReader reader, string query);
+        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(JsonTextReader reader, string query);
     }
 }

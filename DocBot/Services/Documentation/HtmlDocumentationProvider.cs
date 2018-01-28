@@ -21,7 +21,7 @@ namespace DocBot.Services.Documentation
             phantomJs = serviceProvider.GetRequiredService<PhantomJsProvider>();
         }
 
-        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
+        public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticlesAsync(string query)
         {
             string url;
             string html;
@@ -43,9 +43,9 @@ namespace DocBot.Services.Documentation
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
-            return ClearInvalidArticles(await InternalGetDocumentationArticles(doc))?.ToList().AsReadOnly();
+            return ClearInvalidArticles(await InternalGetArticlesAsync(doc))?.ToList().AsReadOnly();
         }
 
-        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(HtmlDocument doc);
+        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(HtmlDocument doc);
     }
 }
