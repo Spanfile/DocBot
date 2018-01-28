@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using DocBot.Services.Documentation;
+using DocBot.Services.Documentation.Cache;
 using Microsoft.Extensions.Configuration;
 
 namespace DocBot.Services

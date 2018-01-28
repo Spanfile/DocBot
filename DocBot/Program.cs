@@ -6,6 +6,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using DocBot.Services;
 using DocBot.Services.Documentation;
+using DocBot.Services.Documentation.Cache;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

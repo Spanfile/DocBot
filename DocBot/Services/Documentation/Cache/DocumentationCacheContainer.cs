@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DocBot.Services.Documentation
+namespace DocBot.Services.Documentation.Cache
 {
     public class DocumentationCacheContainer
     {

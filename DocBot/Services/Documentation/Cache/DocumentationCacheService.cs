@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace DocBot.Services.Documentation
+namespace DocBot.Services.Documentation.Cache
 {
     public class DocumentationCacheService
     {

@@ -5,7 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using DocBot.Services;
-using DocBot.Services.Documentation;
+using DocBot.Services.Documentation.Cache;
 
 namespace DocBot.Modules
 {
