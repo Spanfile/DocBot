@@ -114,9 +114,9 @@ namespace DocBot.Modules
                         .AppendJoin(", ", provider.Aliases)
                         .AppendLine()
                         .Append("Base URL: ")
-                        .AppendLine(provider.BaseURL)
+                        .AppendLine(provider.BaseUrl)
                         .Append("Search URL: ")
-                        .Append(provider.SearchURLFormat.Trim('{', '}'));
+                        .Append(provider.SearchUrlFormat.Trim('{', '}'));
 
                     embed.AddField(f =>
                     {

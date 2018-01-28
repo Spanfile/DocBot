@@ -30,8 +30,8 @@ namespace DocBot.Services.Documentation.Providers
 
         public override string FriendlyName => "Java SE 9 & JDK 9 API documentation";
         public override string[] Aliases => new[] {"java", "javase", "javajdk", "java9", "javase9", "javajdk9"};
-        public override string SearchURLFormat => null;
-        public override string BaseURL => "https://docs.oracle.com/javase/9/docs/api/overview-summary.html";
+        public override string SearchUrlFormat => null;
+        public override string BaseUrl => "https://docs.oracle.com/javase/9/docs/api/overview-summary.html";
         public override string IndexLocation => "java-index.json";
 
         public JavaDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)

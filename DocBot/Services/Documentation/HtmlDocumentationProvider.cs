@@ -23,15 +23,15 @@ namespace DocBot.Services.Documentation
         {
             string url;
             string html;
-            if (string.IsNullOrEmpty(SearchURLFormat))
+            if (string.IsNullOrEmpty(SearchUrlFormat))
             {
-                url = BaseURL;
+                url = BaseUrl;
                 await Logger.LogDebug($"Using base URL {url}");
                 html = await phantomJs.FetchHtml(url, FetchScript, query);
             }
             else
             {
-                url = string.Format(SearchURLFormat, query);
+                url = string.Format(SearchUrlFormat, query);
                 await Logger.LogDebug($"Using search URL {url}");
                 html = await phantomJs.FetchHtml(url, FetchScript);
             }

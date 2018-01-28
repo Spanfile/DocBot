@@ -10,8 +10,8 @@ namespace DocBot.Services.Documentation.Providers
     {
         public override string FriendlyName => "C++ reference";
         public override string[] Aliases => new[] {"cpp", "c++", "cplusplus", "cppreference", "cppref"};
-        public override string SearchURLFormat => null;
-        public override string BaseURL => "http://en.cppreference.com/w/";
+        public override string SearchUrlFormat => null;
+        public override string BaseUrl => "http://en.cppreference.com/w/";
         public override string IndexLocation => "cpp-index.json";
 
         public CppReferenceProvider(IServiceProvider serviceProvider) : base(serviceProvider)

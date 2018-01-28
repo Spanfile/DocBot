@@ -11,12 +11,9 @@ namespace DocBot.Services.Documentation
     {
         public abstract string FriendlyName { get; }
         public abstract string[] Aliases { get; }
-        // ReSharper disable once InconsistentNaming
-        public abstract string SearchURLFormat { get; }
-        // ReSharper disable once InconsistentNaming
-        public abstract string BaseURL { get; }
-        // ReSharper disable once InconsistentNaming
-        public virtual TimeSpan CacheTTL { get; } = TimeSpan.FromDays(7);
+        public abstract string SearchUrlFormat { get; }
+        public abstract string BaseUrl { get; }
+        public virtual TimeSpan CacheTtl { get; } = TimeSpan.FromDays(7);
 
         protected IConfigurationRoot Config;
         protected IServiceProvider ServiceProvider;

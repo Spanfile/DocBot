@@ -17,7 +17,7 @@ namespace DocBot.Services.Documentation
 
         public override async Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query)
         {
-            var uri = string.Format(SearchURLFormat, query);
+            var uri = string.Format(SearchUrlFormat, query);
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", Config["useragent"]);

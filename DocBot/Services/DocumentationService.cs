@@ -63,9 +63,9 @@ namespace DocBot.Services
                     await logger.LogDebug($"Found documentation provider {type.Name}\n\t" +
                                           $"Friendly name: {instance.FriendlyName}\n\t" +
                                           $"Aliases ({instance.Aliases.Length}): {string.Join(", ", instance.Aliases)}\n\t" +
-                                          $"Search URL: {instance.SearchURLFormat}\n\t" +
-                                          $"Base URL: {instance.BaseURL}\n\t" +
-                                          $"Cache TTL: {instance.CacheTTL:d' days 'hh':'mm':'ss}", "DocumentationService");
+                                          $"Search URL: {instance.SearchUrlFormat}\n\t" +
+                                          $"Base URL: {instance.BaseUrl}\n\t" +
+                                          $"Cache TTL: {instance.CacheTtl:d' days 'hh':'mm':'ss}", "DocumentationService");
                 }
             });
         }
@@ -108,7 +108,7 @@ namespace DocBot.Services
                     await logger.LogVerbose($"Query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms",
                         "DocumentationService");
                 }
-                await cache.Add(docProvider.FriendlyName, query, articles, docProvider.CacheTTL);
+                await cache.Add(docProvider.FriendlyName, query, articles, docProvider.CacheTtl);
             }
 
             await logger.LogDebug($"{articles?.Count ?? 0} articles found", "DocumentationService");

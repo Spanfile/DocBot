@@ -10,8 +10,8 @@ namespace DocBot.Services.Documentation.Providers
     {
         public override string FriendlyName => "Python 3 documentation";
         public override string[] Aliases => new[] {"python", "py", "py3"};
-        public override string SearchURLFormat => "https://docs.python.org/3/search.html?q={0}";
-        public override string BaseURL => "https://docs.python.org/3/";
+        public override string SearchUrlFormat => "https://docs.python.org/3/search.html?q={0}";
+        public override string BaseUrl => "https://docs.python.org/3/";
 
         public PythonDocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -26,7 +26,7 @@ namespace DocBot.Services.Documentation.Providers
 
             var resultsList = (from item in results
                                let aTag = item.SelectSingleNode("a")
-                               let url = $"{BaseURL}{aTag.Attributes["href"].Value}"
+                               let url = $"{BaseUrl}{aTag.Attributes["href"].Value}"
                                let name = aTag.InnerText
                                let type = item.SelectSingleNode("span")?.InnerText.Split(' ')[0].Trim(',')
                                select new DocumentationArticle(name, url, type: type)).ToList();
@@ -39,8 +39,8 @@ namespace DocBot.Services.Documentation.Providers
     {
         public override string FriendlyName => "Python 2 documentation";
         public override string[] Aliases => new[] { "py2", "py2.7" };
-        public override string SearchURLFormat => "https://docs.python.org/2.7/search.html?q={0}";
-        public override string BaseURL => "https://docs.python.org/2.7/";
+        public override string SearchUrlFormat => "https://docs.python.org/2.7/search.html?q={0}";
+        public override string BaseUrl => "https://docs.python.org/2.7/";
 
         public Python2DocProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
