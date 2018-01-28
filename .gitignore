@@ -268,3 +268,4 @@ phantomjs.exe
 
 # Bot cache
 cache.json
+cache.json.gz
