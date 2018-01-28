@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,9 +44,22 @@ namespace DocBot.Services.Documentation
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
-            return ClearInvalidArticles(await InternalGetArticlesAsync(doc))?.ToList().AsReadOnly();
+            return
+                ClearInvalidArticles(
+                SanitiseArticles(
+                    await InternalGetArticlesAsync(doc)))?.ToList().AsReadOnly();
         }
 
         protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(HtmlDocument doc);
+
+        private static IEnumerable<DocumentationArticle> SanitiseArticles(
+            IEnumerable<DocumentationArticle> articles)
+        {
+            return from article in articles
+                let decodedName = HttpUtility.HtmlDecode(article.Name)?.Trim()
+                let decodedDescription = HttpUtility.HtmlDecode(article.Description)?.Trim()
+                let decodedType = HttpUtility.HtmlDecode(article.Type ?? "").Trim()
+                select new DocumentationArticle(decodedName, article.Url, decodedDescription, decodedType);
+        }
     }
 }
