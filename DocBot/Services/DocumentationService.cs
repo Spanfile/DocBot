@@ -44,7 +44,21 @@ namespace DocBot.Services
                 foreach (var type in types)
                 {
                     var instance = (DocumentationProvider)Activator.CreateInstance(type, provider);
+                    var available = true;
                     documentationProviders.Add(instance);
+
+                    await logger.LogDebug($"Found documentation provider {type.Name}\n\t" +
+                                          $"Friendly name: {instance.FriendlyName}\n\t" +
+                                          $"Aliases ({instance.Aliases.Length}): {string.Join(", ", instance.Aliases)}\n\t" +
+                                          $"Search URL: {instance.SearchUrlFormat}\n\t" +
+                                          $"Base URL: {instance.BaseUrl}\n\t" +
+                                          $"Cache TTL: {instance.CacheTtl:d' days 'hh':'mm':'ss}", "DocumentationService");
+
+                    if (!instance.IsAvailable)
+                    {
+                        await logger.LogWarning($"Documentation provider {instance.FriendlyName} not available at instantiation",
+                            "DocumentationService");
+                    }
 
                     builder.AddCommand(instance.Aliases[0], async (context, args, provider, commandInfo) =>
                         await FindInDocs(instance, (string)args[0], context), cmdBuilder =>
@@ -59,13 +73,6 @@ namespace DocBot.Services
                                     .WithSummary("Search query");
                             });
                     });
-
-                    await logger.LogDebug($"Found documentation provider {type.Name}\n\t" +
-                                          $"Friendly name: {instance.FriendlyName}\n\t" +
-                                          $"Aliases ({instance.Aliases.Length}): {string.Join(", ", instance.Aliases)}\n\t" +
-                                          $"Search URL: {instance.SearchUrlFormat}\n\t" +
-                                          $"Base URL: {instance.BaseUrl}\n\t" +
-                                          $"Cache TTL: {instance.CacheTtl:d' days 'hh':'mm':'ss}", "DocumentationService");
                 }
             });
         }
@@ -73,8 +80,16 @@ namespace DocBot.Services
         private async Task FindInDocs(DocumentationProvider docProvider, string query, ICommandContext context)
         {
             var builder = new EmbedBuilder()
-                .WithColor(100, 149, 237)
-                .WithDescription($"Searching the {docProvider.FriendlyName}...");
+                .WithColor(100, 149, 237);
+
+            if (!docProvider.IsAvailable)
+            {
+                builder.WithDescription($"Sorry, but the {docProvider.FriendlyName} is not available at this time");
+                await context.Channel.SendMessageAsync("", embed: builder.Build());
+                return;
+            }
+
+            builder.WithDescription($"Searching the {docProvider.FriendlyName}...");
             var msg = await context.Channel.SendMessageAsync("", embed: builder.Build());
 
             var timer = Stopwatch.StartNew();

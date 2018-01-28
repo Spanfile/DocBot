@@ -9,6 +9,8 @@ namespace DocBot.Services.Documentation
 {
     internal class PhantomJsProvider
     {
+        public bool ExecutableExists => File.Exists(config["phantomjsPath"]);
+
         private readonly LoggingService logger;
         private readonly IConfigurationRoot config;
 

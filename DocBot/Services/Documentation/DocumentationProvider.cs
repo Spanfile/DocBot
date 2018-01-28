@@ -14,6 +14,7 @@ namespace DocBot.Services.Documentation
         public abstract string SearchUrlFormat { get; }
         public abstract string BaseUrl { get; }
         public virtual TimeSpan CacheTtl { get; } = TimeSpan.FromDays(7);
+        public abstract bool IsAvailable { get; }
 
         protected IConfigurationRoot Config;
         protected IServiceProvider ServiceProvider;

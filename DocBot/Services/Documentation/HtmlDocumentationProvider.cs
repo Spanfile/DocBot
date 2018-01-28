@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -10,6 +11,7 @@ namespace DocBot.Services.Documentation
     internal abstract class HtmlDocumentationProvider : DocumentationProvider
     {
         public virtual string FetchScript { get; } = "fetchPage.js";
+        public override bool IsAvailable => File.Exists(FetchScript) && phantomJs.ExecutableExists;
 
         private readonly PhantomJsProvider phantomJs;
 

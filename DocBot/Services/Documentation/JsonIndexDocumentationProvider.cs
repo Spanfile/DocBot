@@ -11,6 +11,7 @@ namespace DocBot.Services.Documentation
     internal abstract class JsonIndexDocumentationProvider : DocumentationProvider
     {
         public abstract string IndexLocation { get; }
+        public override bool IsAvailable => File.Exists(IndexLocation) || File.Exists(IndexLocation + ".gz");
 
         protected JsonIndexDocumentationProvider(IServiceProvider serviceProvider)
             : base(serviceProvider)

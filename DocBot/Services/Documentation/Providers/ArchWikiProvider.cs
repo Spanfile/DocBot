@@ -11,6 +11,7 @@ namespace DocBot.Services.Documentation.Providers
     {
         public override string FriendlyName => "ArchWiki";
         public override string[] Aliases => new[] {"arch", "archwiki", "linux"};
+        public override bool IsAvailable => true;
 
         public override string SearchUrlFormat =>
             "https://wiki.archlinux.org/api.php?action=opensearch&format=json&formatversion=2&search={0}&namespace=0&limit=10";
