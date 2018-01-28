@@ -114,9 +114,9 @@ namespace DocBot.Modules
                         .AppendJoin(", ", provider.Aliases)
                         .AppendLine()
                         .Append("Base URL: ")
-                        .AppendLine(provider.BaseUrl)
-                        .Append("Search URL: ")
-                        .Append(provider.SearchUrlFormat.Trim('{', '}'));
+                        .AppendLine(provider.BaseUrl);
+
+                    // TODO: add amount of cached queries for this provider
 
                     embed.AddField(f =>
                     {
