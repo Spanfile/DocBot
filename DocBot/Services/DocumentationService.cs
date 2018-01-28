@@ -109,7 +109,7 @@ namespace DocBot.Services
                 await cache.Add(docProvider.FriendlyName, query, articles, docProvider.CacheTTL);
             }
 
-            await logger.LogDebug($"{articles.Count} articles found", "DocumentationService");
+            await logger.LogDebug($"{articles?.Count ?? 0} articles found", "DocumentationService");
 
             builder = new EmbedBuilder()
                 .WithColor(100, 149, 237)
@@ -118,7 +118,7 @@ namespace DocBot.Services
                     ? $"This query was retrieved from the cache in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms"
                     : $"This query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms");
 
-            if (!articles.Any())
+            if (!articles?.Any() ?? true)
                 builder.WithDescription("No results");
             else
             {
