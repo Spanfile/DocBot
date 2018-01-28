@@ -13,6 +13,7 @@ To query a given site, use the `;doc <documentation> <query>` command. For more 
 * [Java SE 9 & JDK 9](https://docs.oracle.com/javase/9/docs/api/overview-summary.html)
 * [.NET API Browser](https://docs.microsoft.com/en-us/dotnet/api/)
 * [Python 3](https://docs.python.org/3/) and [2.7](https://docs.python.org/2.7/)
+* [Rust](https://doc.rust-lang.org)
 
 ## Running it yourself
 
