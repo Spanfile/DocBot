@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Timers;
 using Discord;
 using Discord.Commands;
 using DocBot.Services.Documentation;
