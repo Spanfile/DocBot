@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DocBot.Services.Documentation.Providers
 {
@@ -19,9 +22,27 @@ namespace DocBot.Services.Documentation.Providers
         {
         }
 
-        protected override IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(JsonTextReader reader)
+        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(JsonTextReader reader)
         {
-            throw new NotImplementedException();
+            var serialiser = new JsonSerializer();
+            var apiResults = (JArray)serialiser.Deserialize(reader);
+
+            var names = apiResults[1].ToObject<string[]>();
+            var urls = apiResults[3].ToObject<string[]>();
+
+            if (names == null)
+            {
+                await Logger.LogWarning("No names found", "ArchWikiProvider");
+                return null;
+            }
+
+            if (urls == null)
+            {
+                await Logger.LogWarning("No URLs found", "ArchWikiProvider");
+                return null;
+            }
+
+            return names.Zip(urls, (name, url) => new DocumentationArticle(name.ToString(), url.ToString()));
         }
     }
 }
