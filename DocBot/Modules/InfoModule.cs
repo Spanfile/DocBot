@@ -38,7 +38,7 @@ namespace DocBot.Modules
                 .AddInlineField("Guilds", discord.Guilds.Count)
                 .AddInlineField("Users", discord.Guilds.Sum(g => g.Users.Count))
                 .AddInlineField("Channels", discord.Guilds.Sum(g => g.Channels.Count))
-                .AddInlineField("Links", "Github | Invite")
+                .AddInlineField("Links", "[Github](https://github.com/Spanfile/DocBot) | [Invite](https://discordapp.com/api/oauth2/authorize?client_id=393834622850564106&permissions=3072&scope=bot)")
                 .WithTimestamp(DateTimeOffset.UtcNow);
 
             await ReplyAsync("", embed: embed.Build());
