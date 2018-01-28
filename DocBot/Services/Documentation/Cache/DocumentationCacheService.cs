@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +21,7 @@ namespace DocBot.Services.Documentation.Cache
             {
                 try
                 {
-                    return new FileInfo(CacheFile).Length;
+                    return new FileInfo(compress ? CacheFile + ".gz" : CacheFile).Length;
                 }
                 catch (FileNotFoundException)
                 {
@@ -31,6 +32,7 @@ namespace DocBot.Services.Documentation.Cache
 
         private readonly IConfigurationRoot config;
         private readonly LoggingService logger;
+        private readonly bool compress;
 
         private Dictionary<string, DocumentationCacheContainer> cacheContainers;
 
@@ -40,24 +42,74 @@ namespace DocBot.Services.Documentation.Cache
             this.logger = logger;
 
             cacheContainers = new Dictionary<string, DocumentationCacheContainer>();
+
+#if DEBUG
+            compress = false;
+#else
+            compress = true;
+#endif
         }
 
         public async Task Load()
         {
-            if (!File.Exists(CacheFile))
+            var file = CacheFile;
+
+            if (compress)
+                file += ".gz";
+
+            if (!File.Exists(file))
             {
-                await logger.LogDebug("No existing cache found", "DocumentationCacheService");
+                await logger.LogDebug($"No existing cache found ({file})", "DocumentationCacheService");
                 return;
             }
 
-            cacheContainers =
-                JsonConvert.DeserializeObject<Dictionary<string, DocumentationCacheContainer>>(
-                    await File.ReadAllTextAsync(CacheFile));
+            using (var fileStream = File.OpenRead(file))
+            {
+                Stream stream = fileStream;
+
+                if (compress)
+                    stream = new GZipStream(fileStream, CompressionMode.Decompress);
+
+                using (var textReader = new StreamReader(stream))
+                using (var jsonReader = new JsonTextReader(textReader))
+                {
+                    var serialiser = new JsonSerializer();
+                    cacheContainers =
+                        serialiser.Deserialize<Dictionary<string, DocumentationCacheContainer>>(jsonReader);
+                }
+
+                if (compress)
+                    stream.Dispose();
+            }
+
+            await logger.LogDebug($"{cacheContainers.Count} cache containers loaded. Articles in total: {Articles}", "DocumentationCacheService");
         }
 
         public async Task Save()
         {
-            await File.WriteAllTextAsync(CacheFile, JsonConvert.SerializeObject(cacheContainers));
+            //await File.WriteAllTextAsync(CacheFile, JsonConvert.SerializeObject(cacheContainers));
+
+            var file = CacheFile;
+
+            if (compress)
+                file += ".gz";
+
+            using (var fileStream = File.OpenWrite(file))
+            {
+                Stream stream = fileStream;
+
+                if (compress)
+                    stream = new GZipStream(fileStream, CompressionLevel.Optimal);
+
+                using (var textWriter = new StreamWriter(stream))
+                {
+                    var serialiser = new JsonSerializer();
+                    await Task.Factory.StartNew(writer => serialiser.Serialize(writer as TextWriter, cacheContainers), textWriter);
+                }
+
+                if (compress)
+                    stream.Dispose();
+            }
         }
 
         public IReadOnlyList<DocumentationArticle> Get(string doc, string search)
