@@ -10,11 +10,13 @@ namespace DocBot.Services
     {
         private readonly DiscordSocketClient discord;
         private readonly CommandService commands;
+        private readonly LogSeverity globalSeverity;
 
-        public LoggingService(DiscordSocketClient discord, CommandService commands)
+        public LoggingService(DiscordSocketClient discord, CommandService commands, LogSeverity globalSeverity)
         {
             this.discord = discord;
             this.commands = commands;
+            this.globalSeverity = globalSeverity;
 
             this.discord.Log += OnLog;
             this.commands.Log += OnLog;
@@ -27,9 +29,17 @@ namespace DocBot.Services
         public Task LogVerbose(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Verbose, source, message, ex);
         public Task LogDebug(string message, string source = "DocBot", Exception ex = null) => Log(LogSeverity.Debug, source, message, ex);
 
-        private static Task Log(LogSeverity severity, string source, string message, Exception ex) => OnLog(new LogMessage(severity, source, message, ex));
+        private Task Log(LogSeverity severity, string source, string message, Exception ex) => OnLog(new LogMessage(severity, source, message, ex));
 
-        private static Task OnLog(LogMessage message) =>
-            Console.Out.WriteLineAsync($"{DateTime.UtcNow:hh:mm:ss} [{message.Severity}] {message.Source}: {message.Exception?.ToString() ?? message.Message}");
+        private Task OnLog(LogMessage message)
+        {
+            if (globalSeverity >= message.Severity)
+            {
+                return Console.Out.WriteLineAsync(
+                    $"{DateTime.UtcNow:hh:mm:ss} [{message.Severity}] {message.Source}: {message.Exception?.ToString() ?? message.Message}");
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

@@ -43,7 +43,10 @@ namespace DocBot
                 }))
                 .AddSingleton<BotInfoService>()
                 .AddSingleton(Assembly.GetEntryAssembly().GetName().Version)
-                .AddSingleton<LoggingService>()
+                .AddSingleton(serviceProvider => new LoggingService(
+                    serviceProvider.GetRequiredService<DiscordSocketClient>(),
+                    serviceProvider.GetRequiredService<CommandService>(),
+                    globalLogLevel))
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<StartupService>()
                 .AddSingleton<PerformanceService>()
