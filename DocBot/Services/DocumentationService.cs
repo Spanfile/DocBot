@@ -91,8 +91,11 @@ namespace DocBot.Services
                 {
                     articles = await docProvider.SearchArticles(query);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    await logger.LogError("Query failed",
+                        "DocumentationService", ex);
+
                     builder = new EmbedBuilder()
                         .WithColor(100, 149, 237)
                         .WithDescription("I couldn't find anything because of an error :(");
@@ -102,7 +105,7 @@ namespace DocBot.Services
                 finally
                 {
                     timer.Stop();
-                    await logger.LogDebug($"Query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms",
+                    await logger.LogVerbose($"Query completed in {Math.Round(timer.Elapsed.TotalMilliseconds)}ms",
                         "DocumentationService");
                 }
                 await cache.Add(docProvider.FriendlyName, query, articles, docProvider.CacheTTL);

@@ -23,7 +23,7 @@ namespace DocBot
 #if DEBUG
                 LogSeverity.Debug;
 #else
-                LogSeverity.Info;
+                LogSeverity.Verbose;
 #endif
 
             var config = new ConfigurationBuilder()
