@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace DocBot.Services.Documentation.Providers
@@ -23,7 +24,7 @@ namespace DocBot.Services.Documentation.Providers
         {
         }
 
-        protected override IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(JsonTextReader reader)
+        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(JsonTextReader reader)
         {
             var serializer = new JsonSerializer();
             var apiResult = serializer.Deserialize<MsDocApiResult>(reader);

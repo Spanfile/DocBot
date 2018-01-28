@@ -24,10 +24,11 @@ namespace DocBot.Services.Documentation
                 using (var stream = await httpClient.GetStreamAsync(uri))
                 using (var textReader = new StreamReader(stream))
                 using (var reader = new JsonTextReader(textReader))
-                    return ClearInvalidArticles(InternalGetDocumentationArticles(reader)).ToList().AsReadOnly();
+                    return ClearInvalidArticles(await InternalGetDocumentationArticles(reader))?.ToList()
+                        .AsReadOnly();
             }
         }
 
-        protected abstract IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(JsonTextReader reader);
+        protected abstract Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(JsonTextReader reader);
     }
 }

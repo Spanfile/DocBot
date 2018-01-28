@@ -46,7 +46,8 @@ namespace DocBot.Services.Documentation
 
                 using (var textReader = new StreamReader(stream))
                 using (var jsonReader = new JsonTextReader(textReader))
-                    articles = ClearInvalidArticles(await InternalGetDocumentationArticle(jsonReader, query)).ToList().AsReadOnly();
+                    articles = ClearInvalidArticles(await InternalGetDocumentationArticle(jsonReader, query))?.ToList()
+                        .AsReadOnly();
 
                 if (useCompressed)
                     stream.Dispose();

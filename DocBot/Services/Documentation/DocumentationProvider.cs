@@ -31,6 +31,6 @@ namespace DocBot.Services.Documentation
 
         public abstract Task<IReadOnlyList<DocumentationArticle>> SearchArticles(string query);
 
-        protected IReadOnlyList<DocumentationArticle> ClearInvalidArticles(IEnumerable<DocumentationArticle> articles) => articles.Where(article => article.IsValid()).ToList().AsReadOnly();
+        protected IReadOnlyList<DocumentationArticle> ClearInvalidArticles(IEnumerable<DocumentationArticle> articles) => articles?.Where(article => article.IsValid()).ToList().AsReadOnly() ?? null;
     }
 }

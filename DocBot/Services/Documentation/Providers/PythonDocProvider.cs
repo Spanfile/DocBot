@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace DocBot.Services.Documentation.Providers
@@ -16,7 +17,7 @@ namespace DocBot.Services.Documentation.Providers
         {
         }
 
-        protected override IEnumerable<DocumentationArticle> InternalGetDocumentationArticles(HtmlDocument doc)
+        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetDocumentationArticles(HtmlDocument doc)
         {
             var results = doc.DocumentNode.SelectNodes("//ul[@class='search']/*");
 
