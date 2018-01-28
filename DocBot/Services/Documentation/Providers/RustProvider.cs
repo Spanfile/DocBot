@@ -8,10 +8,10 @@ namespace DocBot.Services.Documentation.Providers
 {
     internal class RustProvider : HtmlDocumentationProvider
     {
-        public override string FriendlyName => "Rust";
+        public override string FriendlyName => "Rust documentation";
         public override string[] Aliases => new[] {"rust", "rustdoc"};
         public override string SearchUrlFormat => "https://doc.rust-lang.org/std/?search={0}";
-        public override string BaseUrl => "https://doc.rust-lang.org/std/";
+        public override string BaseUrl => "https://doc.rust-lang.org";
 
         private readonly Dictionary<string, string> typeClassDictionary = new Dictionary<string, string> {
             {"mod", "Module"},
@@ -40,7 +40,8 @@ namespace DocBot.Services.Documentation.Providers
             foreach (var result in results)
             {
                 var name = result.ChildNodes[0].InnerText;
-                var url = result.ChildNodes[0].SelectSingleNode("//a").GetAttributeValue("href", null);
+                var relativeUrl = result.ChildNodes[0].ChildNodes[0].GetAttributeValue("href", null);
+                var absoluteUrl = BaseUrl + relativeUrl.Trim('.');
                 var description = result.ChildNodes[1].InnerText;
                 var typeClass = result.GetClasses().First(c => c != "result");
 
@@ -50,7 +51,7 @@ namespace DocBot.Services.Documentation.Providers
                     await Logger.LogDebug($"Couldn't find matching type for class \"{typeClass}\"", "RustProvider");
                 }
 
-                resultsList.Add(new DocumentationArticle(name, url, description, type));
+                resultsList.Add(new DocumentationArticle(name, absoluteUrl, description, type));
             }
 
             return resultsList.AsEnumerable();
