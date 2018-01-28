@@ -44,7 +44,6 @@ namespace DocBot.Services
                 foreach (var type in types)
                 {
                     var instance = (DocumentationProvider)Activator.CreateInstance(type, provider);
-                    var available = true;
                     documentationProviders.Add(instance);
 
                     await logger.LogDebug($"Found documentation provider {type.Name}\n\t" +
