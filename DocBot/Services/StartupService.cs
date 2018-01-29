@@ -31,6 +31,8 @@ namespace DocBot.Services
             await discord.StartAsync();
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
+
+            await discord.SetGameAsync($"{config["prefix"]}help");
         }
     }
 }
