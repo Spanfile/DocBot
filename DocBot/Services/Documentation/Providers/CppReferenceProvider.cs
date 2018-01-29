@@ -1,41 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DocBot.Services.Documentation.Providers
 {
-    internal class CppReferenceProvider : JsonIndexDocumentationProvider
+    internal class CppReferenceProvider : JsonDocumentationProvider
     {
         public override string FriendlyName => "C++ reference";
         public override string[] Aliases => new[] {"cpp", "c++", "cplusplus", "cppreference", "cppref"};
-        public override string SearchUrlFormat => null;
+        public override string SearchUrlFormat => "http://en.cppreference.com/mwiki/api.php?action=query&list=search&format=json&srsearch=thread&srlimit=50&srprops=title";
         public override string BaseUrl => "http://en.cppreference.com/w/";
-        public override string IndexLocation => "cpp-index.json";
+        public override bool IsAvailable => File.Exists("cpp.zip");
 
         public CppReferenceProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
-        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(JsonTextReader reader, string query)
+        protected override async Task<IEnumerable<DocumentationArticle>> InternalGetArticlesAsync(JsonTextReader reader)
         {
-            var serialiser = new JsonSerializer();
-            var index = serialiser.Deserialize<DocumentationArticle[]>(reader);
-            await Logger.LogDebug($"{index.Length} objects loaded from index", "CppReferenceProvider");
+            var searchResults = (await JObject.LoadAsync(reader))["query"]["search"];
+            var resultsList = new List<DocumentationArticle>();
 
-            var lowerQuery = query.ToLowerInvariant();
-            var sortedMatches =
-                from indexObj in index
-                let fullLowerName = indexObj.Name.ToLowerInvariant()
-                let foundIndex = fullLowerName.IndexOf(lowerQuery, StringComparison.Ordinal)
-                where foundIndex != -1
-                let trimmedName = fullLowerName.Trim('<', '>', '(', ')')
-                let rank = trimmedName.Length - query.Length + foundIndex
-                orderby rank, indexObj.Name
-                select indexObj;
+            foreach (var result in searchResults)
+            {
+                var relativeUrl = result["title"];
+                var absoluteUrl = BaseUrl + relativeUrl;
 
-            return sortedMatches;
+            }
         }
+
+
     }
 }
